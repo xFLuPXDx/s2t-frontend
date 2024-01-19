@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         primarySwatch: Colors.blue,
       ),
-      home: Spalsh_Screen(),
+      home: const Spalsh_Screen(),
     );
   }
 }

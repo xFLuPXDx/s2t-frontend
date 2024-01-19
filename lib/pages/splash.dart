@@ -15,7 +15,11 @@ class _Spalsh_ScreenState extends State<Spalsh_Screen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: AnimatedSplashScreen(
-        splash: Icons.bar_chart, 
+        splash: Image.asset(
+          "assets/images/logo.png" ,
+          height: 100,
+          width: 100,
+        ), 
         duration: 3000,
         nextScreen: LoginPage()),
     );
