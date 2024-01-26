@@ -15,13 +15,22 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formkey = GlobalKey<FormState>();
-
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool _isHidden = true;
+  bool _success = true;
+
+  void _togglePasswordView() {
+    setState(() {
+      _isHidden = !_isHidden;
+    });
+    return;
+  }
 
   Future<void> saveAccessToken(String accessToken) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('access_token', accessToken);
+    prefs.setString("user_status", "loggedIn");
   }
 
   Future postData() async {
@@ -41,6 +50,9 @@ class _LoginPageState extends State<LoginPage> {
       saveAccessToken(data["access_token"]);
       print(data);
     } else {
+      setState(() {
+        _success = false;
+      });
       print(response.statusCode.toString());
     }
   }
@@ -67,22 +79,30 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  bool _isValidEmail(String email) {
+    String emailRegex = r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+    RegExp regex = RegExp(emailRegex);
+    return regex.hasMatch(email);
+  }
+
+  bool _isValidPassword(String password) {
+    RegExp alphabeticRegex = RegExp(r'[a-zA-Z]');
+    RegExp numericRegex = RegExp(r'[0-9]');
+    return password.length >= 6 &&
+        alphabeticRegex.hasMatch(password) &&
+        numericRegex.hasMatch(password);
+  }
+
+  final snackBar = SnackBar(
+    content: const Text('Invalid Credentials'),
+    action: SnackBarAction(
+      label: "X",
+      onPressed: () {},
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
-    /* Future fetchData() async {
-      final response =
-          await http.get(Uri.parse("http://10.0.2.2:8000/user/get"));
-
-      if (response.statusCode == 200) {
-        // Successful GET request
-        final Map<String, dynamic> data = json.decode(response.body);
-        print(data);
-      } else {
-        // Error in the GET request
-        print('Error: ${response.reasonPhrase}');
-      }
-    } */
-
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -93,11 +113,10 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              color: Colors.amber,
               height: 150,
               width: 150,
               child: Image.asset(
-                "assets/images/logo.png",
+                "assets/images/clarity.png",
               ),
             ),
             SizedBox(
@@ -106,15 +125,18 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               padding: const EdgeInsets.all(20),
               child: TextFormField(
-                autofocus: true,
                 controller: emailController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Email',
                 ),
-                validator: (email) => email!.length < 3
-                    ? "Email should be more than 6 letters"
-                    : null,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email address';
+                  } else if (!_isValidEmail(value)) {
+                    return 'Enter a valid email address';
+                  }
+                },
                 autovalidateMode: AutovalidateMode.onUserInteraction,
               ),
             ),
@@ -122,24 +144,52 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
               child: TextFormField(
                 controller: passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Password',
+                  suffix: InkWell(
+                    onTap: _togglePasswordView,
+                    child: Icon(
+                      _isHidden ? Icons.visibility : Icons.visibility_off,
+                    ),
+                  ),
                 ),
-                validator: (pass) => pass!.length < 3
-                    ? "pass should be more than 6 letters"
-                    : null,
+                obscureText: _isHidden,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Password must be at least 8 characters';
+                  } else if (!_isValidPassword(value)) {
+                    return 'Password must contain alpha neumeric ';
+                  }
+                },
                 autovalidateMode: AutovalidateMode.onUserInteraction,
               ),
             ),
             GestureDetector(
               onTap: () {
-                postData();
-                getData();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MyHomePage()),
-                );
+                FocusScopeNode currentFocus = FocusScope.of(context);
+                if (!currentFocus.hasPrimaryFocus) {
+                  currentFocus.unfocus();
+                }
+                if (_formkey.currentState!.validate()) {
+                  Future.wait([
+                    postData().then(
+                      (value) {
+                        if (!_success) {
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          passwordController.text = "";
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MyHomePage()),
+                          );
+                        }
+                      },
+                    ),
+                    getData()
+                  ]);
+                }
               },
               child: Container(
                 width: screenWidth * 0.8,
