@@ -49,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
       final Map<String, dynamic> data = json.decode(response.body);
       saveAccessToken(data["access_token"]);
       print(data);
-    } else {
+    } else if (response.statusCode == 401) {
       setState(() {
         _success = false;
       });
@@ -120,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             SizedBox(
-              height: screenHeight * 0.05,
+              height: screenHeight * 0.01,
             ),
             Container(
               padding: const EdgeInsets.all(20),
@@ -165,38 +165,33 @@ class _LoginPageState extends State<LoginPage> {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
               ),
             ),
-            GestureDetector(
-              onTap: () {
+            ElevatedButton(
+              onPressed: () {
                 FocusScopeNode currentFocus = FocusScope.of(context);
                 if (!currentFocus.hasPrimaryFocus) {
                   currentFocus.unfocus();
                 }
                 if (_formkey.currentState!.validate()) {
-                  Future.wait([
-                    postData().then(
-                      (value) {
-                        if (!_success) {
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          passwordController.text = "";
-                        } else {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const MyHomePage()),
-                          );
-                        }
-                      },
-                    ),
-                    getData()
-                  ]);
+                  postData().whenComplete(() {
+                    if (!_success) {
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      passwordController.text = "";
+                    } else {
+                      getData().whenComplete(() {
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MyHomePage()),
+                      );
+                      });
+                      
+                    }
+                  });
                 }
               },
               child: Container(
                 width: screenWidth * 0.8,
                 height: screenHeight * 0.07,
-                decoration: BoxDecoration(
-                    color: const Color.fromARGB(179, 163, 255, 232),
-                    borderRadius: BorderRadius.circular(10)),
                 child: const Center(
                   child: Text(
                     "Login",

@@ -153,7 +153,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               SizedBox(
-                height: screenHeight * 0.05,
+                height: screenHeight * 0.01,
               ),
               Container(
                 padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
@@ -274,8 +274,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
               ),
-              GestureDetector(
-                onTap: () {
+              ElevatedButton(
+                onPressed: () {
                   FocusScopeNode currentFocus = FocusScope.of(context);
                   if (!currentFocus.hasPrimaryFocus) {
                     currentFocus.unfocus();
@@ -306,9 +306,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: Container(
                   width: screenWidth * 0.8,
                   height: screenHeight * 0.07,
-                  decoration: BoxDecoration(
-                      color: const Color.fromARGB(179, 163, 255, 232),
-                      borderRadius: BorderRadius.circular(10)),
                   child: const Center(
                     child: Text(
                       "Sign Up",
