@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../resourcepage.dart';
 
-
 class fetchGroups extends StatefulWidget {
   const fetchGroups({super.key});
 
@@ -14,11 +13,9 @@ class fetchGroups extends StatefulWidget {
 }
 
 class _fetchGroupsState extends State<fetchGroups> {
-  
   List<dynamic> ListOfGroups = [];
-  
 
-  Future getGroups() async{
+  Future getGroups() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
     http.Response response = await http.get(
@@ -29,17 +26,16 @@ class _fetchGroupsState extends State<fetchGroups> {
       },
     );
     List<dynamic> data = json.decode(response.body);
-    print(data);
     setState(() {
-      ListOfGroups = data ;
+      ListOfGroups = data;
     });
   }
 
-  Future addGroups(code) async{
+  Future addGroups(code) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
     final body = {
-      'code' : code,
+      'code': code,
     };
     http.Response response = await http.post(
       Uri.parse("http://10.0.2.2:8000/group/join"),
@@ -50,10 +46,8 @@ class _fetchGroupsState extends State<fetchGroups> {
       },
     );
 
-    if(response.statusCode == 200){
-      Future.wait([
-        getGroups()
-      ]);
+    if (response.statusCode == 200) {
+      Future.wait([getGroups()]);
     }
   }
 
@@ -83,13 +77,14 @@ class _fetchGroupsState extends State<fetchGroups> {
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Resource_Page()),
-                      );
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Resource_Page()),
+                        );
                       },
                       child: Container(
-                        margin: const EdgeInsets.only(top: 10 , left: 10,right: 10),
+                        margin:
+                            const EdgeInsets.only(top: 10, left: 10, right: 10),
                         height: screenHeight * 0.2,
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -100,8 +95,8 @@ class _fetchGroupsState extends State<fetchGroups> {
                                   Colors.black.withOpacity(0.1), // Shadow color
                               spreadRadius: 2, // Spread radius
                               blurRadius: 2, // Blur radius
-                              offset:
-                                  const Offset(-2, 2), // Offset position of shadow
+                              offset: const Offset(
+                                  -2, 2), // Offset position of shadow
                             ),
                           ],
                         ),
@@ -114,20 +109,67 @@ class _fetchGroupsState extends State<fetchGroups> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(left: 30),
-                                  child: Text(ListOfGroups[index]['group_Name'].toString(),
+                                  child: Text(
+                                      ListOfGroups[index]['group_Name']
+                                          .toString(),
                                       style:
-                                          const TextStyle(color: Colors.black)
-                                        ),
+                                          const TextStyle(color: Colors.black)),
                                 ),
-                                const Padding(
-                                  padding: EdgeInsets.only(right: 20),
-                                  child: Icon(Icons.more_horiz),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 20),
+                                  child: GestureDetector(
+                                      onTap: () {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return Container(
+                                              height: screenHeight * 0.08,
+                                              width: screenWidth,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                    color: Colors.white,
+                                              ),
+                                              
+                                              child: Column(
+                                                children: [
+                                                  GestureDetector(
+                                                    child: GestureDetector(
+                                                      onTap: () {
+                                                        
+                                                      },
+                                                      child: Container(
+                                                        height: 50,
+                                                        width: screenWidth,
+                                                        child: const Padding(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  left: 20,
+                                                                  top: 20),
+                                                          child: Text(
+                                                            "Unenrol",
+                                                            style: TextStyle(
+                                                                fontSize: 18),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: const Icon(Icons.more_horiz)),
                                 )
                               ],
                             ),
                             Padding(
                               padding: const EdgeInsets.only(left: 30),
-                              child: Text(ListOfGroups[index]['group_Subject'].toString(),
+                              child: Text(
+                                  ListOfGroups[index]['group_Subject']
+                                      .toString(),
                                   style: const TextStyle(color: Colors.black)),
                             ),
                           ],
@@ -142,5 +184,3 @@ class _fetchGroupsState extends State<fetchGroups> {
     );
   }
 }
-
-
