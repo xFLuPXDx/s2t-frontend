@@ -9,46 +9,45 @@ class fetchGroups extends StatefulWidget {
   const fetchGroups({super.key});
 
   @override
-  State<fetchGroups> createState() => _fetchGroupsState();
+  State<fetchGroups> createState() => fetchGroupsState();
 }
 
-class _fetchGroupsState extends State<fetchGroups> {
+class fetchGroupsState extends State<fetchGroups> {
   List<dynamic> ListOfGroups = [];
+
+  Future deleteGroups(code) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access_token');
+    http.Response response = await http.post(
+      Uri.parse("http://192.168.0.111:8000/group/delete"),
+      body: json.encode({"group_Id": code}),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
+    );
+    setState(() {
+      getGroups();
+    });
+  }
 
   Future getGroups() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
     http.Response response = await http.get(
-      Uri.parse("http://10.0.2.2:8000/group/fetch"),
+      Uri.parse("http://192.168.0.111:8000/group/fetch"),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token'
       },
     );
     List<dynamic> data = json.decode(response.body);
-    setState(() {
+    if(data != []){
+      setState(() {
       ListOfGroups = data;
     });
-  }
-
-  Future addGroups(code) async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('access_token');
-    final body = {
-      'code': code,
-    };
-    http.Response response = await http.post(
-      Uri.parse("http://10.0.2.2:8000/group/join"),
-      body: body,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token'
-      },
-    );
-
-    if (response.statusCode == 200) {
-      Future.wait([getGroups()]);
     }
+    
   }
 
   @override
@@ -91,12 +90,10 @@ class _fetchGroupsState extends State<fetchGroups> {
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color:
-                                  Colors.black.withOpacity(0.1), // Shadow color
-                              spreadRadius: 2, // Spread radius
-                              blurRadius: 2, // Blur radius
-                              offset: const Offset(
-                                  -2, 2), // Offset position of shadow
+                              color: Colors.black.withOpacity(0.1),
+                              spreadRadius: 2,
+                              blurRadius: 2,
+                              offset: const Offset(-2, 2),
                             ),
                           ],
                         ),
@@ -109,9 +106,7 @@ class _fetchGroupsState extends State<fetchGroups> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(left: 30),
-                                  child: Text(
-                                      ListOfGroups[index]['group_Name']
-                                          .toString(),
+                                  child: Text(ListOfGroups[index]['group_Name'],
                                       style:
                                           const TextStyle(color: Colors.black)),
                                 ),
@@ -128,29 +123,61 @@ class _fetchGroupsState extends State<fetchGroups> {
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(8),
-                                                    color: Colors.white,
+                                                color: Colors.white,
                                               ),
-                                              
                                               child: Column(
                                                 children: [
                                                   GestureDetector(
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        
-                                                      },
-                                                      child: Container(
-                                                        height: 50,
-                                                        width: screenWidth,
-                                                        child: const Padding(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                  left: 20,
-                                                                  top: 20),
-                                                          child: Text(
-                                                            "Unenrol",
-                                                            style: TextStyle(
-                                                                fontSize: 18),
-                                                          ),
+                                                    onTap: () {
+                                                      showDialog<String>(
+                                                          context: context,
+                                                          builder: (BuildContext
+                                                                  context) =>
+                                                              AlertDialog(
+                                                                title: const Text(
+                                                                    'AlertDialog Title'),
+                                                                content: const Text(
+                                                                    'AlertDialog description'),
+                                                                actions: <Widget>[
+                                                                  TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.pop(
+                                                                          context,
+                                                                          'Cancel');
+                                                                    },
+                                                                    child: const Text(
+                                                                        'Cancel'),
+                                                                  ),
+                                                                  TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      deleteGroups(
+                                                                          ListOfGroups[index]
+                                                                              [
+                                                                              'group_Id']);
+                                                                      Navigator.pop(
+                                                                          context,
+                                                                          'OK');
+                                                                    },
+                                                                    child: const Text(
+                                                                        'Unenrol'),
+                                                                  ),
+                                                                ],
+                                                              ));
+                                                    },
+                                                    child: SizedBox(
+                                                      height: 50,
+                                                      width: screenWidth,
+                                                      child: const Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                left: 20,
+                                                                top: 20),
+                                                        child: Text(
+                                                          "Unenrol",
+                                                          style: TextStyle(
+                                                              fontSize: 18),
                                                         ),
                                                       ),
                                                     ),

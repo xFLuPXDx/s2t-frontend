@@ -50,7 +50,7 @@ class _SignUpPageState extends State<SignUpPage> {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
     final response = await http.get(
-      Uri.parse("http://10.0.2.2:8000/user/get"),
+      Uri.parse("http://192.168.0.111:8000/user/get"),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token'
@@ -70,7 +70,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Future postData() async {
     final response = await http.post(
-      Uri.parse("http://10.0.2.2:8000/signUp"),
+      Uri.parse("http://192.168.0.111:8000/signUp"),
       body: json.encode({
         "user_Id": "string",
         "user_Fname": fnameController.text,
@@ -284,6 +284,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     Future.wait([
                       postData().then(
                         (value) {
+                          getData();
                           if (emailExists) {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(snackBar);
@@ -299,7 +300,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           }
                         },
                       ),
-                      getData()
+                      
                     ]);
                   }
                 },

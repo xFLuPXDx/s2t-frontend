@@ -1,5 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:s2t_learning/pages/resourcepage.dart';
+import 'joinGroup.dart';
+import 'login.dart';
 import 'splash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,18 +20,31 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  final joinController = TextEditingController();
+  @override
+  void initState() {
+    getUserType();
+    super.initState();
+  }
+  String? user_Type;
+
+  getUserType() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      user_Type = prefs.getString("user_Type");
+    });
+  }
 
   Future logout() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("user_status", "loggedOut");
+    setState(() {
+      prefs.setString("user_status", "loggedOut");
+    });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       appBar: AppBar(
         elevation: 1,
@@ -39,61 +58,108 @@ class _MyHomePageState extends State<MyHomePage> {
                     MaterialPageRoute(
                         builder: (context) => const Spalsh_Screen())));
               },
-              child: const Icon(
-                Icons.logout_rounded,
+              child: const Padding(
+                padding: EdgeInsets.only(right: 20),
+                child: Icon(
+                  Icons.logout_rounded,
+                ),
               ))
         ],
       ),
-      body: fetchGroups(),
+      body: const fetchGroups(),
       floatingActionButton: FloatingActionButton(
         splashColor: const Color.fromARGB(255, 255, 255, 255),
         shape: const CircleBorder(),
         backgroundColor: Colors.white,
         child: const Icon(Icons.add),
         onPressed: () {
-          setState(() {
-            
-          });
-          showModalBottomSheet(
-            context: context,
-            builder: (BuildContext context) {
-              return Container(
-                height: screenHeight * 0.5,
-                width: screenWidth,
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 20),
-                      child: Text(
-                        "Ask your instructor for class code",
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 39, 39, 39),
-                            fontSize: 20),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      child: TextField(
-                        
-                        controller: joinController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Code',
+          if (user_Type == "educator") {
+            showModalBottomSheet(
+              context: context,
+              builder: (BuildContext context) {
+                return Container(
+                  height: screenHeight * 0.135,
+                  width: screenWidth,
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          
+                        },
+                        child: Container(
+                          height: 55,
+                          width: screenWidth,
+                          decoration:  BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                offset: const Offset(0, 1),
+                              )],
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 20, top: 15),
+                            child: Text(
+                              "Create",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                    ElevatedButton(
-                      onPressed: (){
-                        
-                      }, 
-                      child: const Text("Join"),
-                      )
-                  ],
-                ),
-              );
-            },
-          );
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => JoinGroup()),
+                      );
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(top: 1),
+                          height: 55,
+                          width: screenWidth,
+                          color: Colors.white,
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 20 ,top: 10),
+                            child: Text(
+                              "Join",
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          } else {
+            showModalBottomSheet(
+              context: context,
+              builder: (BuildContext context) {
+                return Container(
+                  height: screenHeight * 0.1,
+                  width: screenWidth,
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 50,
+                        width: screenWidth,
+                        child: const Padding(
+                          padding: EdgeInsets.only(left: 20, top: 20),
+                          child: Text(
+                            "Join",
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }
         },
       ),
     );

@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
     };
 
     final response = await http.post(
-      Uri.parse("http://10.0.2.2:8000/auth"),
+      Uri.parse("http://192.168.0.111:8000/auth"),
       body: body,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
     );
@@ -49,6 +49,9 @@ class _LoginPageState extends State<LoginPage> {
       final Map<String, dynamic> data = json.decode(response.body);
       saveAccessToken(data["access_token"]);
       print(data);
+      setState(() {
+        _success = true;
+      });
     } else if (response.statusCode == 401) {
       setState(() {
         _success = false;
@@ -61,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
     final response = await http.get(
-      Uri.parse("http://10.0.2.2:8000/user/get"),
+      Uri.parse("http://192.168.0.111:8000/user/get"),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token'
@@ -178,11 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                       passwordController.text = "";
                     } else {
                       getData().whenComplete(() {
-                        Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MyHomePage()),
-                      );
+                        Get.off(()=>const MyHomePage());
                       });
                       
                     }
