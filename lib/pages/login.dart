@@ -5,6 +5,7 @@ import "package:http/http.dart" as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home.dart';
 import 'signup.dart';
+String API_URL = "http://192.168.56.1:8000";
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -40,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
     };
 
     final response = await http.post(
-      Uri.parse("http://192.168.0.111:8000/auth"),
+      Uri.parse("$API_URL/auth"),
       body: body,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
     );
@@ -64,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
     final response = await http.get(
-      Uri.parse("http://192.168.0.111:8000/user/get"),
+      Uri.parse("$API_URL/user/get"),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token'

@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../resourcepage.dart';
+
+String API_URL = "http://192.168.56.1:8000";
 
 class fetchGroups extends StatefulWidget {
   const fetchGroups({super.key});
@@ -19,7 +21,7 @@ class fetchGroupsState extends State<fetchGroups> {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
     http.Response response = await http.post(
-      Uri.parse("http://192.168.0.111:8000/group/delete"),
+      Uri.parse("$API_URL/group/delete"),
       body: json.encode({"group_Id": code}),
       headers: {
         'Content-Type': 'application/json',
@@ -31,23 +33,22 @@ class fetchGroupsState extends State<fetchGroups> {
     });
   }
 
-  Future getGroups() async {
+   getGroups() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
     http.Response response = await http.get(
-      Uri.parse("http://192.168.0.111:8000/group/fetch"),
+      Uri.parse("$API_URL/group/fetch"),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token'
       },
     );
     List<dynamic> data = json.decode(response.body);
-    if(data != []){
+    if (data != []) {
       setState(() {
-      ListOfGroups = data;
-    });
+        ListOfGroups = data;
+      });
     }
-    
   }
 
   @override
@@ -112,8 +113,8 @@ class fetchGroupsState extends State<fetchGroups> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(right: 20),
-                                  child: GestureDetector(
-                                      onTap: () {
+                                  child: IconButton(
+                                      onPressed: () {
                                         showModalBottomSheet(
                                           context: context,
                                           builder: (BuildContext context) {
@@ -129,6 +130,7 @@ class fetchGroupsState extends State<fetchGroups> {
                                                 children: [
                                                   GestureDetector(
                                                     onTap: () {
+                                                      Navigator.pop(context);
                                                       showDialog<String>(
                                                           context: context,
                                                           builder: (BuildContext
@@ -163,8 +165,10 @@ class fetchGroupsState extends State<fetchGroups> {
                                                                     child: const Text(
                                                                         'Unenrol'),
                                                                   ),
+                                                                  
                                                                 ],
                                                               ));
+                                                              
                                                     },
                                                     child: SizedBox(
                                                       height: 50,
@@ -185,10 +189,12 @@ class fetchGroupsState extends State<fetchGroups> {
                                                 ],
                                               ),
                                             );
+
                                           },
                                         );
+                                        
                                       },
-                                      child: const Icon(Icons.more_horiz)),
+                                      icon: Icon(Icons.more_horiz)),
                                 )
                               ],
                             ),
