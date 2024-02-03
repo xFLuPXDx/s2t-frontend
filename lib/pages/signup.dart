@@ -4,7 +4,7 @@ import "package:http/http.dart" as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home.dart';
 import 'login.dart';
-String API_URL = "http://192.168.56.1:8000";
+String API_URL = "http://192.168.0.111:8000";
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});

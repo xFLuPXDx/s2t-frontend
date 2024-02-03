@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home.dart';
 
-String API_URL = "http://192.168.56.1:8000";
+String API_URL = "http://192.168.0.111:8000";
 
 class JoinGroup extends StatefulWidget {
   const JoinGroup({super.key});

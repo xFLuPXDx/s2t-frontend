@@ -8,7 +8,8 @@ import 'JoinCreateGroup.dart';
 import 'splash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'views/getgroups.dart';
-String API_URL = "http://192.168.56.1:8000";
+
+String API_URL = "http://192.168.0.111:8000";
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -18,18 +19,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   List<dynamic> ListOfGroups = [];
   String? user_Type;
-  
+
+  List<StatelessWidget> draweritem = [
+    const DrawerHeader(
+      decoration: BoxDecoration(
+        color: Colors.blue,
+      ),
+      child: Text('Drawer Header'),
+    ),
+  ];
+
   @override
   void initState() {
     getUserType();
     getGroups();
     super.initState();
   }
-
-  
 
   getUserType() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -58,7 +65,21 @@ class _MyHomePageState extends State<MyHomePage> {
     List<dynamic> data = json.decode(response.body);
     if (data != []) {
       setState(() {
-        ListOfGroups = data;
+        draweritem = [
+          ListView.builder(
+              itemCount: data.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    Get.off(() => const Resource_Page());
+                  },
+                  child: Container(
+                      color: Colors.amber,
+                      height: 40,
+                      child: Text(data[index]["group_Name"])),
+                );
+              }),
+        ];
       });
     }
   }
@@ -67,20 +88,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    final draweritem = ListView.builder(
-                  itemCount: ListOfGroups.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        Get.off(()=>Resource_Page());
-                      },
-                      child: Container(
-                        height: 40,
-                        child: Text(ListOfGroups[index]["group_Name"])
-                      ),
-                    );
-                  }
-                  );
     return Scaffold(
       appBar: AppBar(
         elevation: 1,
@@ -101,10 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ))
         ],
       ),
-      drawer: Drawer(
-        child:draweritem,
-        ), 
-  
+      drawer: const Groups_Drawer(),
       body: const fetchGroups(),
       floatingActionButton: FloatingActionButton(
         splashColor: const Color.fromARGB(255, 255, 255, 255),
@@ -146,9 +150,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () => Get.to(() => JoinGroup()),
+                        onTap: () => Get.to(() => const JoinGroup()),
                         child: Container(
-                          margin: EdgeInsets.only(top: 1),
+                          margin: const EdgeInsets.only(top: 1),
                           height: 55,
                           width: screenWidth,
                           color: Colors.white,
@@ -177,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     children: [
                       GestureDetector(
-                        onTap: () => Get.to(() => JoinGroup()),
+                        onTap: () => Get.to(() => const JoinGroup()),
                         child: SizedBox(
                           height: 50,
                           width: screenWidth,
@@ -199,6 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
     );
-    ;
   }
 }
+
+

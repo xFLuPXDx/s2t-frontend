@@ -5,7 +5,7 @@ import "package:http/http.dart" as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home.dart';
 import 'signup.dart';
-String API_URL = "http://192.168.56.1:8000";
+String API_URL = "http://192.168.0.111:8000";
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -116,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
+            SizedBox(
               height: 150,
               width: 150,
               child: Image.asset(
@@ -182,14 +182,14 @@ class _LoginPageState extends State<LoginPage> {
                       passwordController.text = "";
                     } else {
                       getData().whenComplete(() {
-                        Get.off(()=>const MyHomePage());
+                        Get.off(()=>MyHomePage());
                       });
                       
                     }
                   });
                 }
               },
-              child: Container(
+              child: SizedBox(
                 width: screenWidth * 0.8,
                 height: screenHeight * 0.07,
                 child: const Center(

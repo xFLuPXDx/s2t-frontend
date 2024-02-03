@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'views/getgroups.dart';
 
 class Resource_Page extends StatefulWidget {
   const Resource_Page({super.key});
@@ -14,6 +15,7 @@ class _Resource_PageState extends State<Resource_Page> {
       appBar: AppBar(
         backgroundColor: Colors.amberAccent,
       ),
+      drawer: Groups_Drawer(),
     );
   }
 }
