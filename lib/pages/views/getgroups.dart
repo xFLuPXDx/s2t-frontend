@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:s2t_learning/pages/resourcepage2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../home.dart';
-import '../resourcepage.dart';
+import '../resourcepage1.dart';
 
 String API_URL = "http://192.168.0.111:8000";
 
@@ -75,7 +76,7 @@ class fetchGroupsState extends State<fetchGroups> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      Get.to(() => Resource_Page(
+                      Get.to(() => Resources(
                           group_Id: ListOfGroups[index]['group_Id']));
                     },
                     child: Container(
@@ -133,9 +134,9 @@ class fetchGroupsState extends State<fetchGroups> {
                                                                 context) =>
                                                             AlertDialog(
                                                               title: const Text(
-                                                                  'AlertDialog Title'),
+                                                                  'Unenrol from group'),
                                                               content: const Text(
-                                                                  'AlertDialog description'),
+                                                                  'Click on Unenrol to confirm'),
                                                               actions: <Widget>[
                                                                 TextButton(
                                                                   onPressed:
@@ -284,7 +285,7 @@ class _Groups_DrawerState extends State<Groups_Drawer> {
                   return GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
-                      Get.to(() => Resource_Page(
+                      Get.to(() => Resources(
                         group_Id: ListOfGroups[index]['group_Id']));} ,
                     child: Container(
                       decoration: BoxDecoration(

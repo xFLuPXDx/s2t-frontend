@@ -156,7 +156,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 height: screenHeight * 0.01,
               ),
               Container(
-                padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
+                margin: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
                 child: TextFormField(
                   controller: fnameController,
                   decoration: const InputDecoration(
@@ -166,7 +166,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
+                margin: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
                 child: TextFormField(
                   controller: lnameController,
                   decoration: const InputDecoration(
@@ -175,35 +175,37 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
               ),
-              DropdownButtonFormField<String>(
-                items: <String>['learner', 'educator']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                hint: const Text('User Type'),
-                value: dropdownValue,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select';
-                  }
-                  return null;
-                },
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    dropdownValue = newValue!;
-                  });
-                },
-                padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+              Container(
+                margin: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
+                child: DropdownButtonFormField<String>(
+                  items: <String>['learner', 'educator']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  hint: const Text('User Type'),
+                  value: dropdownValue,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please select';
+                    }
+                    return null;
+                  },
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      dropdownValue = newValue!;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ),
               Container(
-                padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
+                margin: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
                 child: TextFormField(
                   controller: emailController,
                   decoration: const InputDecoration(
@@ -222,7 +224,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
+                margin: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
                 child: TextFormField(
                   controller: passwordController,
                   obscureText: _isHidden1,
@@ -248,7 +250,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
+                margin: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
                 child: TextFormField(
                   controller: confirmPasswordController,
                   obscureText: _isHidden2,

@@ -57,16 +57,16 @@ class _MyHomePageState extends State<MyHomePage> {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        elevation: 1,
-        backgroundColor: Colors.white,
+        shadowColor: Colors.black,
+        elevation: 5,
         actions: [
           IconButton(
               onPressed: () {
                 logout().whenComplete(Get.off(() =>  const Spalsh_Screen()) as FutureOr<void> Function());
               },
-              icon: const Padding(
-                padding: EdgeInsets.only(right: 20),
-                child: Icon(
+              icon: Container(
+                margin: const EdgeInsets.only(right: 10),
+                child: const Icon(
                   Icons.logout_rounded,
                 ),
               ))
