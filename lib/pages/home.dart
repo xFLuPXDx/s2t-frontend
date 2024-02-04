@@ -1,10 +1,7 @@
-import 'dart:convert';
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
-import 'package:s2t_learning/pages/resourcepage.dart';
-import 'JoinCreateGroup.dart';
+import 'views/JoinCreateGroup.dart';
 import 'splash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'views/getgroups.dart';
@@ -34,7 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     getUserType();
-    getGroups();
+
     super.initState();
   }
 
@@ -52,37 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  getGroups() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('access_token');
-    http.Response response = await http.get(
-      Uri.parse("$API_URL/group/fetch"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token'
-      },
-    );
-    List<dynamic> data = json.decode(response.body);
-    if (data != []) {
-      setState(() {
-        draweritem = [
-          ListView.builder(
-              itemCount: data.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    Get.off(() => const Resource_Page());
-                  },
-                  child: Container(
-                      color: Colors.amber,
-                      height: 40,
-                      child: Text(data[index]["group_Name"])),
-                );
-              }),
-        ];
-      });
-    }
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -95,10 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
               onPressed: () {
-                logout().whenComplete(() => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Spalsh_Screen())));
+                logout().whenComplete(Get.off(() =>  const Spalsh_Screen()) as FutureOr<void> Function());
               },
               icon: const Padding(
                 padding: EdgeInsets.only(right: 20),

@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'home.dart';
+import '../home.dart';
 
 String API_URL = "http://192.168.0.111:8000";
 

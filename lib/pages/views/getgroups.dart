@@ -75,11 +75,8 @@ class fetchGroupsState extends State<fetchGroups> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Resource_Page()),
-                      );
+                      Get.to(() => Resource_Page(
+                          group_Id: ListOfGroups[index]['group_Id']));
                     },
                     child: Container(
                       margin:
@@ -171,10 +168,8 @@ class fetchGroupsState extends State<fetchGroups> {
                                                     height: 50,
                                                     width: screenWidth,
                                                     child: const Padding(
-                                                      padding:
-                                                          EdgeInsets.only(
-                                                              left: 20,
-                                                              top: 20),
+                                                      padding: EdgeInsets.only(
+                                                          left: 20, top: 20),
                                                       child: Text(
                                                         "Unenrol",
                                                         style: TextStyle(
@@ -195,9 +190,7 @@ class fetchGroupsState extends State<fetchGroups> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 30),
-                            child: Text(
-                                ListOfGroups[index]['group_Subject']
-                                    .toString(),
+                            child: Text(ListOfGroups[index]['group_Subject'],
                                 style: const TextStyle(color: Colors.black)),
                           ),
                         ],
@@ -239,58 +232,76 @@ class _Groups_DrawerState extends State<Groups_Drawer> {
       });
     }
   }
+
   @override
   void initState() {
     // TODO: implement initState
     getGroups();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      width: 250,
       child: SafeArea(
         child: Column(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(top: 15, left: 15),
-                  child: Text(
-                    'Clarity',
-                    style: TextStyle(fontSize: 25),
-                  ),
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 15, left: 15),
+                child: Text(
+                  'Clarity',
+                  style: TextStyle(fontSize: 25),
                 ),
-                const Divider(
-                  height: 18,
-                ),
-                GestureDetector(
-                  onTap: () => Get.off(() => const MyHomePage()),
-                  child: Container(
-                      padding: const EdgeInsets.only(left: 15),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.home_outlined, size: 30),
-                          Padding(
-                            padding: EdgeInsets.only(left: 5),
-                            child:
-                                Text("Groups", style: TextStyle(fontSize: 25)),
-                          )
-                        ],
-                      )),
-                )
-              ],
-            ),
+              ),
+              const Divider(
+                height: 18,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Get.off(() => const MyHomePage());
+                },
+                child: Container(
+                    padding: const EdgeInsets.only(left: 15),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.home_outlined, size: 30),
+                        Padding(
+                          padding: EdgeInsets.only(left: 5),
+                          child: Text("Groups", style: TextStyle(fontSize: 25)),
+                        )
+                      ],
+                    )),
+              ),
+              SizedBox(height: 20),
+            ]),
             Expanded(
-              child: ListView.builder(
+              child: ListView.separated(
+                separatorBuilder: (context, index) => SizedBox(height: 10),
                 itemCount: ListOfGroups.length,
                 itemBuilder: (context, index) {
-                  return Padding(
-                  padding: EdgeInsets.only(top: 15, left: 15),
-                  child: Text(ListOfGroups[index]['group_Name'],
-                    style: TextStyle(fontSize: 25),
-                  ),
-                );
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                      Get.to(() => Resource_Page(
+                        group_Id: ListOfGroups[index]['group_Id']));} ,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(0.05),
+                          border: Border.all(
+                              width: 1,
+                              color: Colors.black.withOpacity(0.05),
+                              style: BorderStyle.solid)),
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 20, top: 5, bottom: 5),
+                        child: Text(
+                          ListOfGroups[index]['group_Name'],
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                    ),
+                  );
                 },
               ),
             )
