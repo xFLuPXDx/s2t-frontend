@@ -1,0 +1,3 @@
+-keep class com.example.networking.** { *; }
+-dontshrink
+-dontoptimize
