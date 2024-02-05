@@ -14,18 +14,24 @@ class GroupPage extends StatefulWidget {
 
 class _GroupPageState extends State<GroupPage> {
   int _selectedIndex = 0;
-
+  String gid = "";
+  List<Widget> widgetList = [];
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
-  List<Widget> widgetList = [
-      Resources(),
-      RecordPage(),
-      Peoples(),
-  ];
+  @override
+  void initState() {
+    gid = widget.group_Id;
+    widgetList = [
+      Resources(group_Id: gid),
+      RecordPage(group_Id: gid),
+      Peoples(group_Id: gid),
+    ];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +43,12 @@ class _GroupPageState extends State<GroupPage> {
       body: widgetList.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.file_copy_outlined), label: "Resources"),
-          BottomNavigationBarItem(icon: Icon(Icons.record_voice_over), label: "Record"),
-          BottomNavigationBarItem(icon: Icon(Icons.people_alt_sharp), label: "Peoples")
+          BottomNavigationBarItem(
+              icon: Icon(Icons.file_copy_outlined), label: "Resources"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.record_voice_over), label: "Record"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.people_alt_sharp), label: "Peoples")
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.red,

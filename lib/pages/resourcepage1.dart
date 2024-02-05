@@ -8,8 +8,8 @@ import 'resourcepage2.dart';
 import 'views/getgroups.dart';
 
 class Resources extends StatefulWidget {
-  /* final String group_Id;
-  const Resources(String group_id, {super.key, required this.group_Id}); */
+  final String group_Id;
+  const Resources({super.key, required this.group_Id});
 
   @override
   State<Resources> createState() => _ResourcesState();
@@ -58,7 +58,7 @@ class _ResourcesState extends State<Resources> {
           child: Padding(
             padding: const EdgeInsets.only(left: 25, top: 50),
             child: Text(
-             " widget.group_Id",
+             widget.group_Id,
               style: const TextStyle(fontSize: 30),
             ),
           )),
@@ -180,7 +180,7 @@ class _ResourcesState extends State<Resources> {
     });
     return [];
   }
-  
+ 
   @override
   void initState() {
     // TODO: implement initState
