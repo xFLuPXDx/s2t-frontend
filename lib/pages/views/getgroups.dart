@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:s2t_learning/pages/group.dart';
 import 'package:s2t_learning/pages/resourcepage2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../home.dart';
@@ -76,8 +77,8 @@ class fetchGroupsState extends State<fetchGroups> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      Get.to(() => Resources(
-                          group_Id: ListOfGroups[index]['group_Id']));
+                      Get.to(() => GroupPage(
+                        group_Id: ListOfGroups[index]['group_Id']));
                     },
                     child: Container(
                       margin:
@@ -285,7 +286,7 @@ class _Groups_DrawerState extends State<Groups_Drawer> {
                   return GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
-                      Get.to(() => Resources(
+                      Get.to(() => GroupPage(
                         group_Id: ListOfGroups[index]['group_Id']));} ,
                     child: Container(
                       decoration: BoxDecoration(

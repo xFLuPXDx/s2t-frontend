@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get.dart';
@@ -9,8 +8,8 @@ import 'resourcepage2.dart';
 import 'views/getgroups.dart';
 
 class Resources extends StatefulWidget {
-  final String group_Id;
-  const Resources({super.key, required this.group_Id});
+  /* final String group_Id;
+  const Resources(String group_id, {super.key, required this.group_Id}); */
 
   @override
   State<Resources> createState() => _ResourcesState();
@@ -59,7 +58,7 @@ class _ResourcesState extends State<Resources> {
           child: Padding(
             padding: const EdgeInsets.only(left: 25, top: 50),
             child: Text(
-              widget.group_Id,
+             " widget.group_Id",
               style: const TextStyle(fontSize: 30),
             ),
           )),
@@ -181,15 +180,7 @@ class _ResourcesState extends State<Resources> {
     });
     return [];
   }
-
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
+  
   @override
   void initState() {
     // TODO: implement initState
@@ -200,26 +191,11 @@ class _ResourcesState extends State<Resources> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        shadowColor: Colors.black,
-        elevation: 5,
-      ),
       body: ListView.builder(
           itemCount: reswid.length,
           itemBuilder: (context, Index) {
             return reswid[Index];
           }),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.file_copy_rounded), label: "Resources"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.mic_rounded), label: "Record")
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: const Color.fromARGB(255, 255, 51, 51),
-        onTap: _onItemTapped,
-      ),
     );
   }
 }
