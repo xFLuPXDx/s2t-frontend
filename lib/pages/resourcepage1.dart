@@ -23,18 +23,6 @@ class _ResourcesState extends State<Resources> {
     "Resource 4"
   ];
 
-  getGroups() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('access_token');
-    http.Response response = await http.get(
-      Uri.parse("$API_URL/group/fetch"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token'
-      },
-    );
-  }
-
   List<Widget> reswid = [];
 
   List<Widget> resourceList(List<dynamic> data) {

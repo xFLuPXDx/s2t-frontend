@@ -311,6 +311,6 @@ class _Groups_DrawerState extends State<Groups_Drawer> {
         ),
       ),
     );
-    ;
+
   }
 }
