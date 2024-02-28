@@ -62,7 +62,8 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
               onPressed: () {
-                logout().whenComplete(Get.off(() =>  const Spalsh_Screen()) as FutureOr<void> Function());
+                logout();
+                Get.off(() =>  const Spalsh_Screen());
               },
               icon: Container(
                 margin: const EdgeInsets.only(right: 10),

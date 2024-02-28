@@ -17,13 +17,19 @@ class _RecordPageState extends State<RecordPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-                height : 100,
-                width : 100,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.red.withOpacity(0.8),
-                ),
-              child: IconButton(icon: const Icon(Icons.mic_none_rounded) , onPressed: (){}, iconSize: 100, padding: const EdgeInsets.only(right: 100 , top: 5)),
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.red.withOpacity(0.8),
+              ),
+              child: IconButton(
+                  icon: const Icon(Icons.mic_none_rounded),
+                  onPressed: () {
+
+                  },
+                  iconSize: 100,
+                  padding: const EdgeInsets.only(right: 100, top: 5)),
             )
           ],
         ),

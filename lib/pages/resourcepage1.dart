@@ -45,7 +45,7 @@ class _ResourcesState extends State<Resources> {
           ),
           child: Padding(
             padding: const EdgeInsets.only(left: 25, top: 50),
-            child: Text(
+            child: Text("Group Code : "+
              widget.group_Id,
               style: const TextStyle(fontSize: 30),
             ),
