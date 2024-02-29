@@ -7,8 +7,9 @@ import 'package:s2t_learning/pages/resourcepage2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../home.dart';
 import '../resourcepage1.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-String API_URL = "http://192.168.0.111:8000";
+String API_URL = dotenv.get("API_URL");
 
 class fetchGroups extends StatefulWidget {
   const fetchGroups({super.key});
