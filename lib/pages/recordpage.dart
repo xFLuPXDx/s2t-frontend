@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:audioplayers/audioplayers.dart' as ap;
 
 class RecordPage extends StatefulWidget {
   final String group_Id;
@@ -12,6 +13,11 @@ class RecordPage extends StatefulWidget {
 
 class _RecordPageState extends State<RecordPage> {
   final recorder = FlutterSoundRecorder();
+  final audioPlayer = ap.AudioPlayer();
+  /* Duration playerDuration = Duration.zero;
+  Duration playerPosition = Duration.zero;
+  String? url="";
+  bool isPlaying = false; */
   bool isRecorderReady = false;
 
   Future record() async {
@@ -22,8 +28,10 @@ class _RecordPageState extends State<RecordPage> {
   Future stop() async {
     if (!isRecorderReady) return;
     final path = await recorder.stopRecorder();
+    /* setState(() {
+      url = path;
+    }); */
     print(path);
-    
   }
 
   Future initRecorder() async {
@@ -44,13 +52,32 @@ class _RecordPageState extends State<RecordPage> {
     // TODO: implement initState
     super.initState();
     initRecorder();
+    /* audioPlayer.onPlayerStateChanged.listen((state) { 
+      setState(() {
+        isPlaying = state == ap.PlayerState.playing;
+      });
+    }); */
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    audioPlayer.dispose();
     recorder.closeRecorder();
+  }
+
+  String formatTime(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final hours = twoDigits(duration.inHours);
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+
+    return [
+      if (duration.inHours > 0) hours,
+      minutes,
+      seconds,
+    ].join(':');
   }
 
   @override
@@ -89,9 +116,8 @@ class _RecordPageState extends State<RecordPage> {
                       ? snapshot.data!.duration
                       : Duration.zero;
 
-                  String twoDigits(int n) => n.toString().padLeft(2,'0');
-                  final twoDigitsMinutes =
-                      twoDigits(duration.inMinutes);
+                  String twoDigits(int n) => n.toString().padLeft(2, '0');
+                  final twoDigitsMinutes = twoDigits(duration.inMinutes);
                   final twoDigitsSeconds =
                       twoDigits(duration.inSeconds.remainder(60));
 
@@ -101,7 +127,39 @@ class _RecordPageState extends State<RecordPage> {
                       fontSize: 50,
                     ),
                   );
-                })
+                }),
+            const SizedBox(
+              height: 20,
+            ),
+            /* Slider(
+                min: 0,
+                max: playerDuration.inSeconds.toDouble(),
+                value: playerPosition.inSeconds.toDouble(),
+                onChanged: (value) async {}),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(formatTime(playerPosition)),
+                  Text(formatTime(playerDuration - playerPosition))
+                ],
+              ),
+            ),
+            CircleAvatar(
+              radius: 35,
+              child: IconButton(
+                icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+                iconSize: 50,
+                onPressed: () async{
+                  if(isPlaying){
+                    await audioPlayer.pause();
+                  }else{
+                    await audioPlayer.play(ap.UrlSource(url.toString()));
+                  }
+                },
+              ),
+            ) */
           ],
         ),
       ),
