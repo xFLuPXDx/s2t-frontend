@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:audioplayers/audioplayers.dart' as ap;
+import "package:http/http.dart" as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+String API_URL = dotenv.get("API_URL");
 
 class RecordPage extends StatefulWidget {
   final String group_Id;
@@ -14,24 +19,42 @@ class RecordPage extends StatefulWidget {
 class _RecordPageState extends State<RecordPage> {
   final recorder = FlutterSoundRecorder();
   final audioPlayer = ap.AudioPlayer();
-  /* Duration playerDuration = Duration.zero;
+  Duration playerDuration = Duration.zero;
   Duration playerPosition = Duration.zero;
-  String? url="";
-  bool isPlaying = false; */
+  String? url = "";
+  bool isPlaying = false;
   bool isRecorderReady = false;
+  bool audReady = false;
 
   Future record() async {
     if (!isRecorderReady) return;
-    await recorder.startRecorder(toFile: 'audio');
+    await recorder.startRecorder(toFile: 'audio', codec: Codec.defaultCodec);
   }
 
   Future stop() async {
     if (!isRecorderReady) return;
     final path = await recorder.stopRecorder();
-    /* setState(() {
+    setState(() {
       url = path;
-    }); */
+      audReady = true;
+    });
+    
     print(path);
+  }
+
+  Future<void> uploadFile() async {
+    var uri = Uri.parse("$API_URL/resource/upload");
+    var request = http.MultipartRequest('POST', uri);
+    print(url);
+    print(url.toString());
+    request.files.add(await http.MultipartFile.fromPath('file', url.toString()));
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+        print("File uploaded successfully");
+    } else {
+        print("File upload failed with status: ${response.statusCode}");
+    }
   }
 
   Future initRecorder() async {
@@ -52,18 +75,18 @@ class _RecordPageState extends State<RecordPage> {
     // TODO: implement initState
     super.initState();
     initRecorder();
-    /* audioPlayer.onPlayerStateChanged.listen((state) { 
+    audioPlayer.onPlayerStateChanged.listen((state) {
       setState(() {
         isPlaying = state == ap.PlayerState.playing;
       });
-    }); */
+    });
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    audioPlayer.dispose();
+    
     recorder.closeRecorder();
   }
 
@@ -131,35 +154,44 @@ class _RecordPageState extends State<RecordPage> {
             const SizedBox(
               height: 20,
             ),
-            /* Slider(
-                min: 0,
-                max: playerDuration.inSeconds.toDouble(),
-                value: playerPosition.inSeconds.toDouble(),
-                onChanged: (value) async {}),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(formatTime(playerPosition)),
-                  Text(formatTime(playerDuration - playerPosition))
-                ],
-              ),
-            ),
-            CircleAvatar(
-              radius: 35,
-              child: IconButton(
-                icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-                iconSize: 50,
-                onPressed: () async{
-                  if(isPlaying){
-                    await audioPlayer.pause();
-                  }else{
-                    await audioPlayer.play(ap.UrlSource(url.toString()));
-                  }
-                },
-              ),
-            ) */
+            audReady
+                ? Column(
+                    children: [
+                      Slider(
+                          min: 0,
+                          max: playerDuration.inSeconds.toDouble(),
+                          value: playerPosition.inSeconds.toDouble(),
+                          onChanged: (value) async {}),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(formatTime(playerPosition)),
+                            Text(formatTime(playerDuration - playerPosition))
+                          ],
+                        ),
+                      ),
+                      CircleAvatar(
+                        radius: 35,
+                        child: IconButton(
+                          icon:
+                              Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+                          iconSize: 50,
+                          onPressed: () async {
+                            if (isPlaying) {
+                              await audioPlayer.pause();
+                            } else {
+                              await audioPlayer
+                                  .play(ap.UrlSource(url.toString()));
+                              uploadFile().whenComplete(() => print("succ"));
+                            }
+                          },
+                        ),
+                      )
+                    ],
+                  )
+                : Text("data")
           ],
         ),
       ),

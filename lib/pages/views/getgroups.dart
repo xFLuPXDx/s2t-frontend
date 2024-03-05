@@ -47,6 +47,7 @@ class fetchGroupsState extends State<fetchGroups> {
         'Authorization': 'Bearer $token'
       },
     );
+
     List<dynamic> data = json.decode(response.body);
     if (data != []) {
       setState(() {
