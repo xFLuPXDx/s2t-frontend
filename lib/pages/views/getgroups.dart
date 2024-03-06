@@ -77,7 +77,7 @@ class fetchGroupsState extends State<fetchGroups> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      Get.to(() =>GroupPage(group_Id: ListOfGroups[index]['group_Id'] , group_Name : ListOfGroups[index]['group_Name']));
+                      Get.to(() =>GroupPage(group_Id: ListOfGroups[index]['group_Id'] , group_Subject : ListOfGroups[index]['group_Subject']));
                     },
                     child: Container(
                       margin:
@@ -286,7 +286,7 @@ class _Groups_DrawerState extends State<Groups_Drawer> {
                     onTap: () {
                       Navigator.pop(context);
                       Get.to(() =>
-                          GroupPage(group_Id: ListOfGroups[index]['group_Id'] , group_Name : ListOfGroups[index]['group_Name']));
+                          GroupPage(group_Id: ListOfGroups[index]['group_Id'] , group_Subject : ListOfGroups[index]['group_Subject']));
                     },
                     child: Container(
                       decoration: BoxDecoration(

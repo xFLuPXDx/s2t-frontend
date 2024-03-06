@@ -11,8 +11,8 @@ String API_URL = dotenv.get("API_URL");
 
 class Peoples extends StatefulWidget {
   final String group_Id;
-  final String group_Name;
-  const Peoples({super.key, required this.group_Id , required this.group_Name});
+  final String group_Subject;
+  const Peoples({super.key, required this.group_Id , required this.group_Subject});
 
   @override
   State<Peoples> createState() => _PeoplesState();

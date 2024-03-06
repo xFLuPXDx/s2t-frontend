@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class Resource extends StatefulWidget {
   final String group_Id;
-  final String group_Name;
-  const Resource({super.key, required this.group_Id , required this.group_Name});
+  final String group_Subject;
+  const Resource({super.key, required this.group_Id , required this.group_Subject});
 
   @override
   State<Resource> createState() => _ResourceState();
@@ -18,7 +18,7 @@ class _ResourceState extends State<Resource> {
         elevation: 5,
       ),
       backgroundColor: Colors.white,
-      body: Text(widget.group_Name),
+      body: Text(widget.group_Subject),
     );
   }
 }

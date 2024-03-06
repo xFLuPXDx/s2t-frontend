@@ -6,8 +6,8 @@ import 'resourcepage1.dart';
 
 class GroupPage extends StatefulWidget {
   final String group_Id;
-  final String group_Name;
-  const GroupPage({super.key, required this.group_Id , required this.group_Name});
+  final String group_Subject;
+  const GroupPage({super.key, required this.group_Id , required this.group_Subject});
 
   @override
   State<GroupPage> createState() => _GroupPageState();
@@ -42,14 +42,14 @@ class _GroupPageState extends State<GroupPage> {
   Widget build(BuildContext context) {
     if (user_Type == 'educator') {
       widgetList = [
-        Resources(group_Id: widget.group_Id , group_Name:  widget.group_Name),
-        RecordPage(group_Id: widget.group_Id , group_Name:  widget.group_Name),
-        Peoples(group_Id: widget.group_Id , group_Name:  widget.group_Name),
+        Resources(group_Id: widget.group_Id , group_Subject:  widget.group_Subject),
+        RecordPage(group_Id: widget.group_Id , group_Subject:  widget.group_Subject),
+        Peoples(group_Id: widget.group_Id , group_Subject:  widget.group_Subject),
       ];
     } else {
       widgetList = [
-        Resources(group_Id: widget.group_Id , group_Name:  widget.group_Name),
-        Peoples(group_Id: widget.group_Id , group_Name:  widget.group_Name),
+        Resources(group_Id: widget.group_Id , group_Subject:  widget.group_Subject),
+        Peoples(group_Id: widget.group_Id , group_Subject:  widget.group_Subject),
       ];
     }
     return Scaffold(

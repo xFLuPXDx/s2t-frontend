@@ -9,9 +9,9 @@ import 'views/getgroups.dart';
 
 class Resources extends StatefulWidget {
   final String group_Id;
-  final String group_Name;
+  final String group_Subject;
   const Resources(
-      {super.key, required this.group_Id, required this.group_Name});
+      {super.key, required this.group_Id, required this.group_Subject});
 
   @override
   State<Resources> createState() => _ResourcesState();
@@ -46,10 +46,10 @@ class _ResourcesState extends State<Resources> {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.only(left: 25, top: 50),
+            padding: const EdgeInsets.only(left: 20, top: 60),
             child: Text(
-              widget.group_Name,
-              style: const TextStyle(fontSize: 30),
+              widget.group_Subject,
+              style: const TextStyle(fontSize: 20),
             ),
           )),
       Container(
@@ -92,7 +92,7 @@ class _ResourcesState extends State<Resources> {
         ListOfResource.add(GestureDetector(
           onTap: () {
             Get.to(() => Resource(
-                group_Id: widget.group_Id, group_Name: widget.group_Name));
+                group_Id: widget.group_Id, group_Subject: widget.group_Subject));
           },
           child: Container(
             margin: const EdgeInsets.all(10),
@@ -129,7 +129,7 @@ class _ResourcesState extends State<Resources> {
         ListOfResource.add(GestureDetector(
           onTap: () {
             Get.to(() => Resource(
-                group_Id: widget.group_Id, group_Name: widget.group_Name));
+                group_Id: widget.group_Id, group_Subject: widget.group_Subject));
           },
           child: Container(
             margin: const EdgeInsets.all(10),

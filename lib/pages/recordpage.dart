@@ -10,8 +10,8 @@ String API_URL = dotenv.get("API_URL");
 
 class RecordPage extends StatefulWidget {
   final String group_Id;
-  final String group_Name;
-  const RecordPage({super.key, required this.group_Id , required this.group_Name});
+  final String group_Subject;
+  const RecordPage({super.key, required this.group_Id , required this.group_Subject});
 
   @override
   State<RecordPage> createState() => _RecordPageState();
