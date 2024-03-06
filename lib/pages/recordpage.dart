@@ -44,7 +44,7 @@ class _RecordPageState extends State<RecordPage> {
   }
 
   Future<void> uploadFile() async {
-    var uri = Uri.parse("$API_URL/resource/upload");
+    var uri = Uri.parse("$API_URL/resource/upload/${widget.group_Id}");
     var request = http.MultipartRequest('POST', uri);
     print(url);
     print(url.toString());
