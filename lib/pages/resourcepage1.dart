@@ -9,7 +9,9 @@ import 'views/getgroups.dart';
 
 class Resources extends StatefulWidget {
   final String group_Id;
-  const Resources({super.key, required this.group_Id});
+  final String group_Name;
+  const Resources(
+      {super.key, required this.group_Id, required this.group_Name});
 
   @override
   State<Resources> createState() => _ResourcesState();
@@ -45,13 +47,13 @@ class _ResourcesState extends State<Resources> {
           ),
           child: Padding(
             padding: const EdgeInsets.only(left: 25, top: 50),
-            child: Text("Group Code : "+
-             widget.group_Id,
+            child: Text(
+              widget.group_Name,
               style: const TextStyle(fontSize: 30),
             ),
           )),
-          Container(
-            margin: const EdgeInsets.all(10),
+      Container(
+          margin: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
@@ -68,8 +70,8 @@ class _ResourcesState extends State<Resources> {
             children: [
               Container(
                 margin: const EdgeInsets.only(left: 20),
-                height : 40,
-                width : 40,
+                height: 40,
+                width: 40,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.grey.withOpacity(0.2),
@@ -77,22 +79,20 @@ class _ResourcesState extends State<Resources> {
                 child: const Icon(Icons.person_2),
               ),
               const Padding(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  "Announce something to your class",
-                 
-                )
-              ),
+                  padding: EdgeInsets.all(20),
+                  child: Text(
+                    "Announce something to your class",
+                  )),
             ],
-          )
-          )
+          ))
     ];
 
     for (String item in data) {
       if (item == "Resource 1" || item == "Resource 2") {
         ListOfResource.add(GestureDetector(
           onTap: () {
-            Get.to(() => const Resource());
+            Get.to(() => Resource(
+                group_Id: widget.group_Id, group_Name: widget.group_Name));
           },
           child: Container(
             margin: const EdgeInsets.all(10),
@@ -126,41 +126,42 @@ class _ResourcesState extends State<Resources> {
           ),
         ));
       } else {
-         ListOfResource.add(GestureDetector(
-        onTap: () {
-          Get.to(()=>const Resource());
-        },
-        child: Container(
-          margin: const EdgeInsets.all(10),
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.grey,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                spreadRadius: 2,
-                blurRadius: 2,
-                offset: const Offset(-2, 2),
-              ),
-            ],
+        ListOfResource.add(GestureDetector(
+          onTap: () {
+            Get.to(() => Resource(
+                group_Id: widget.group_Id, group_Name: widget.group_Name));
+          },
+          child: Container(
+            margin: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  spreadRadius: 2,
+                  blurRadius: 2,
+                  offset: const Offset(-2, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 30),
+                      child: Text(item,
+                          style: const TextStyle(color: Colors.black)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 30),
-                    child:
-                        Text(item, style: const TextStyle(color: Colors.black)),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ));
+        ));
       }
     }
     setState(() {
@@ -168,7 +169,7 @@ class _ResourcesState extends State<Resources> {
     });
     return [];
   }
- 
+
   @override
   void initState() {
     // TODO: implement initState
