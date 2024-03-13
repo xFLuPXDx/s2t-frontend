@@ -11,7 +11,8 @@ String API_URL = dotenv.get("API_URL");
 class RecordPage extends StatefulWidget {
   final String group_Id;
   final String group_Subject;
-  const RecordPage({super.key, required this.group_Id , required this.group_Subject});
+  const RecordPage(
+      {super.key, required this.group_Id, required this.group_Subject});
 
   @override
   State<RecordPage> createState() => _RecordPageState();
@@ -39,7 +40,7 @@ class _RecordPageState extends State<RecordPage> {
       url = path;
       audReady = true;
     });
-    
+
     print(path);
   }
 
@@ -48,13 +49,14 @@ class _RecordPageState extends State<RecordPage> {
     var request = http.MultipartRequest('POST', uri);
     print(url);
     print(url.toString());
-    request.files.add(await http.MultipartFile.fromPath('file', url.toString()));
+    request.files
+        .add(await http.MultipartFile.fromPath('file', url.toString()));
     var response = await request.send();
 
     if (response.statusCode == 200) {
-        print("File uploaded successfully");
+      print("File uploaded successfully");
     } else {
-        print("File upload failed with status: ${response.statusCode}");
+      print("File upload failed with status: ${response.statusCode}");
     }
   }
 
@@ -68,7 +70,7 @@ class _RecordPageState extends State<RecordPage> {
     await recorder.openRecorder();
     isRecorderReady = true;
 
-    recorder.setSubscriptionDuration(const Duration(milliseconds: 500));
+    recorder.setSubscriptionDuration(const Duration(seconds: 1));
   }
 
   @override
@@ -81,13 +83,23 @@ class _RecordPageState extends State<RecordPage> {
         isPlaying = state == ap.PlayerState.playing;
       });
     });
+    audioPlayer.onDurationChanged.listen((newDuration) {
+      setState(() {
+        playerDuration = newDuration;
+      });
+    });
+    audioPlayer.onPositionChanged.listen((newPosition) {
+      setState(() {
+        playerPosition = newPosition;
+      });
+    });
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    
+
     recorder.closeRecorder();
   }
 
@@ -106,12 +118,14 @@ class _RecordPageState extends State<RecordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
+            audReady ? const Text("Audio Recorded") : Container(
               height: 100,
               width: 100,
               decoration: BoxDecoration(
@@ -162,14 +176,18 @@ class _RecordPageState extends State<RecordPage> {
                           min: 0,
                           max: playerDuration.inSeconds.toDouble(),
                           value: playerPosition.inSeconds.toDouble(),
-                          onChanged: (value) async {}),
+                          onChanged: (value) async {
+                            final position = Duration(seconds: value.toInt());
+                            await audioPlayer.seek(position);
+                            await audioPlayer.resume();
+                          }),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(formatTime(playerPosition)),
-                            Text(formatTime(playerDuration - playerPosition))
+                            Text(formatTime(playerDuration))
                           ],
                         ),
                       ),
@@ -185,14 +203,31 @@ class _RecordPageState extends State<RecordPage> {
                             } else {
                               await audioPlayer
                                   .play(ap.UrlSource(url.toString()));
-                              uploadFile().whenComplete(() => print("succ"));
                             }
                           },
                         ),
-                      )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 50),
+                        child: ElevatedButton(
+                          onPressed: () => uploadFile(),
+                          child: SizedBox(
+                            width: screenWidth * 0.5,
+                            height: screenHeight * 0.07,
+                            child: const Center(
+                              child: Text(
+                                "Upload",
+                                style: TextStyle(
+                                  fontSize: 30,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   )
-                : Text("data")
+                : const Text("Click on button record audio")
           ],
         ),
       ),

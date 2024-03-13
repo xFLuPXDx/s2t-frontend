@@ -3,6 +3,7 @@ import 'package:s2t_learning/pages/recordpage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'peoplespage.dart';
 import 'resourcepage1.dart';
+import 'views/getgroups.dart';
 
 class GroupPage extends StatefulWidget {
   final String group_Id;

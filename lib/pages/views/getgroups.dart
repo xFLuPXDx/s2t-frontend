@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:s2t_learning/pages/group.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../structure/groupstruct.dart';
 import '../home.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -17,8 +18,7 @@ class fetchGroups extends StatefulWidget {
 }
 
 class fetchGroupsState extends State<fetchGroups> {
-  List<dynamic> ListOfGroups = [];
-
+  
   Future deleteGroups(code) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
@@ -35,7 +35,9 @@ class fetchGroupsState extends State<fetchGroups> {
     });
   }
 
-  getGroups() async {
+  Future<Groups>? futureGroups;
+
+  Future<Groups> getGroups() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
     http.Response response = await http.get(
@@ -46,18 +48,17 @@ class fetchGroupsState extends State<fetchGroups> {
       },
     );
 
-    List<dynamic> data = json.decode(response.body);
-    if (data != []) {
-      setState(() {
-        ListOfGroups = data;
-      });
+    if (response.statusCode == 200) {
+      return Groups.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to load groups');
     }
   }
 
   @override
   void initState() {
     super.initState();
-    getGroups();
+    futureGroups = getGroups();
   }
 
   @override
@@ -65,19 +66,24 @@ class fetchGroupsState extends State<fetchGroups> {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return Column(
-      children: [
-        Expanded(
-          child: Center(
-            child: ListView.separated(
+    return FutureBuilder<Groups>(
+        future: futureGroups,
+        builder: ((context, snapshot) {
+          if (snapshot.hasData) {
+            return ListView.separated(
                 separatorBuilder: (context, index) => const SizedBox(
                       height: 10,
                     ),
-                itemCount: ListOfGroups.length,
-                itemBuilder: (context, index) {
+                itemCount: snapshot.data!.count!.toInt(),
+                itemBuilder: ((context, index) {
                   return GestureDetector(
                     onTap: () {
-                      Get.to(() =>GroupPage(group_Id: ListOfGroups[index]['group_Id'] , group_Subject : ListOfGroups[index]['group_Subject']));
+                      Get.to(() => GroupPage(
+                          group_Id:
+                              snapshot.data!.result![index].groupId.toString(),
+                          group_Subject: snapshot
+                              .data!.result![index].groupSubject
+                              .toString()));
                     },
                     child: Container(
                       margin:
@@ -104,7 +110,9 @@ class fetchGroupsState extends State<fetchGroups> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(left: 30),
-                                child: Text(ListOfGroups[index]['group_Name'],
+                                child: Text(
+                                    snapshot.data!.result![index].groupName
+                                        .toString(),
                                     style:
                                         const TextStyle(color: Colors.black)),
                               ),
@@ -130,40 +138,43 @@ class fetchGroupsState extends State<fetchGroups> {
                                                     Navigator.pop(context);
                                                     showDialog<String>(
                                                         context: context,
-                                                        builder: (BuildContext
-                                                                context) =>
-                                                            AlertDialog(
-                                                              title: const Text(
-                                                                  'Unenrol from group'),
-                                                              content: const Text(
-                                                                  'Click on Unenrol to confirm'),
-                                                              actions: <Widget>[
-                                                                TextButton(
-                                                                  onPressed:
-                                                                      () {
-                                                                    Navigator.pop(
-                                                                        context,
-                                                                        'Cancel');
-                                                                  },
-                                                                  child: const Text(
-                                                                      'Cancel'),
-                                                                ),
-                                                                TextButton(
-                                                                  onPressed:
-                                                                      () {
-                                                                    deleteGroups(
-                                                                        ListOfGroups[index]
-                                                                            [
-                                                                            'group_Id']);
-                                                                    Navigator.pop(
-                                                                        context,
-                                                                        'OK');
-                                                                  },
-                                                                  child: const Text(
-                                                                      'Unenrol'),
-                                                                ),
-                                                              ],
-                                                            ));
+                                                        builder:
+                                                            (BuildContext
+                                                                    context) =>
+                                                                AlertDialog(
+                                                                  title: const Text(
+                                                                      'Unenrol from group'),
+                                                                  content:
+                                                                      const Text(
+                                                                          'Click on Unenrol to confirm'),
+                                                                  actions: <Widget>[
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.pop(
+                                                                            context,
+                                                                            'Cancel');
+                                                                      },
+                                                                      child: const Text(
+                                                                          'Cancel'),
+                                                                    ),
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        deleteGroups(snapshot
+                                                                            .data!
+                                                                            .result![index]
+                                                                            .groupId
+                                                                            .toString());
+                                                                        Navigator.pop(
+                                                                            context,
+                                                                            'OK');
+                                                                      },
+                                                                      child: const Text(
+                                                                          'Unenrol'),
+                                                                    ),
+                                                                  ],
+                                                                ));
                                                   },
                                                   child: SizedBox(
                                                     height: 50,
@@ -185,24 +196,27 @@ class fetchGroupsState extends State<fetchGroups> {
                                         },
                                       );
                                     },
-                                    icon: Icon(Icons.more_horiz)),
+                                    icon: const Icon(Icons.more_horiz)),
                               )
                             ],
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 30),
-                            child: Text(ListOfGroups[index]['group_Subject'],
+                            child: Text(
+                                snapshot.data!.result![index].groupSubject
+                                    .toString(),
                                 style: const TextStyle(color: Colors.black)),
                           ),
                         ],
                       ),
                     ),
                   );
-                }),
-          ),
-        ),
-      ],
-    );
+                }));
+          } else if (snapshot.hasError) {
+            return Text("${snapshot.error}");
+          }
+          return const CircularProgressIndicator();
+        }));
   }
 }
 
@@ -214,9 +228,9 @@ class Groups_Drawer extends StatefulWidget {
 }
 
 class _Groups_DrawerState extends State<Groups_Drawer> {
-  List<dynamic> ListOfGroups = [];
+  Future<Groups>? futureGroups;
 
-  getGroups() async {
+  Future<Groups> getGroups() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
     http.Response response = await http.get(
@@ -226,19 +240,18 @@ class _Groups_DrawerState extends State<Groups_Drawer> {
         'Authorization': 'Bearer $token'
       },
     );
-    List<dynamic> data = json.decode(response.body);
-    if (data != []) {
-      setState(() {
-        ListOfGroups = data;
-      });
+
+    if (response.statusCode == 200) {
+      return Groups.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to load groups');
     }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
-    getGroups();
     super.initState();
+    futureGroups = getGroups();
   }
 
   @override
@@ -275,38 +288,55 @@ class _Groups_DrawerState extends State<Groups_Drawer> {
                       ],
                     )),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
             ]),
-            Expanded(
-              child: ListView.separated(
-                separatorBuilder: (context, index) => SizedBox(height: 10),
-                itemCount: ListOfGroups.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                      Get.to(() =>
-                          GroupPage(group_Id: ListOfGroups[index]['group_Id'] , group_Subject : ListOfGroups[index]['group_Subject']));
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.05),
-                          border: Border.all(
-                              width: 1,
-                              color: Colors.black.withOpacity(0.05),
-                              style: BorderStyle.solid)),
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 20, top: 5, bottom: 5),
-                        child: Text(
-                          ListOfGroups[index]['group_Name'],
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
+            FutureBuilder<Groups>(
+                future: futureGroups,
+                builder: ((context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Expanded(
+                      child: ListView.separated(
+                        separatorBuilder: (context, index) => const SizedBox(
+                      height: 10,
                     ),
-                  );
-                },
-              ),
-            )
+                        itemCount: snapshot.data!.count!.toInt(),
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              Get.to(() => GroupPage(
+                                  group_Id: snapshot
+                                      .data!.result![index].groupId
+                                      .toString(),
+                                  group_Subject: snapshot
+                                      .data!.result![index].groupSubject
+                                      .toString()));
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.blue.withOpacity(0.05),
+                                  border: Border.all(
+                                      width: 1,
+                                      color: Colors.black.withOpacity(0.05),
+                                      style: BorderStyle.solid)),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 20, top: 5, bottom: 5),
+                                child: Text(
+                                  snapshot.data!.result![index].groupName
+                                      .toString(),
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                }))
           ],
         ),
       ),

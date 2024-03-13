@@ -64,8 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
               onPressed: () {
-                logout();
-                Get.off(() =>  const Spalsh_Screen());
+                logout().whenComplete(() => Get.off(() =>  const Spalsh_Screen()));
+                
               },
               icon: Container(
                 margin: const EdgeInsets.only(right: 10),
@@ -75,8 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ))
         ],
       ),
-      drawer: const Groups_Drawer(),
-      body: const fetchGroups(),
+      body: Center(child: fetchGroups()),
       floatingActionButton: FloatingActionButton(
         splashColor: const Color.fromARGB(255, 255, 255, 255),
         shape: const CircleBorder(),
