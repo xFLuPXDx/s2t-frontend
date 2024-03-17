@@ -22,22 +22,20 @@ class Peoples extends StatefulWidget {
 
 class _PeoplesState extends State<Peoples> {
   String gid = "";
-  Future<Learners>? futureLearners;
-  Future<Educators>? futureEducators;
+  Future<PeoplesInGroup>? futurePeoplesInGroup;
 
   @override
   void initState() {
     super.initState();
     gid = widget.group_Id;
-    futureEducators = getEducators();
-    futureLearners = getLearners();
+    futurePeoplesInGroup = getPeoplesInGroup();
   }
 
-  Future<Educators> getEducators() async {
+  Future<PeoplesInGroup> getPeoplesInGroup() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
     http.Response response = await http.post(
-      Uri.parse("$API_URL/group/peoples/educators"),
+      Uri.parse("$API_URL/group/users"),
       body: json.encode({"group_Id": gid}),
       headers: {
         'Content-Type': 'application/json',
@@ -45,26 +43,7 @@ class _PeoplesState extends State<Peoples> {
       },
     );
     if (response.statusCode == 200) {
-      return Educators.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to load groups');
-    }
-  }
-
-  Future<Learners> getLearners() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('access_token');
-    http.Response response = await http.post(
-      Uri.parse("$API_URL/group/peoples/learners"),
-      body: json.encode({"group_Id": gid}),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token'
-      },
-    );
-
-    if (response.statusCode == 200) {
-      return Learners.fromJson(json.decode(response.body));
+      return PeoplesInGroup.fromJson(json.decode(response.body));
     } else {
       throw Exception('Failed to load groups');
     }
@@ -75,18 +54,20 @@ class _PeoplesState extends State<Peoples> {
     return Scaffold(
       body: Column(
         children: [
-          Container(
-            margin: const EdgeInsets.only(top: 20),
-            child: const Text("Educators", style: TextStyle(fontSize: 30)),
-          ),
-          const Divider(),
           Expanded(
-            child: FutureBuilder<Educators>(
-                future: futureEducators,
+            child: FutureBuilder<PeoplesInGroup>(
+                future: futurePeoplesInGroup,
                 builder: ((context, snapshot) {
                   if (snapshot.hasData) {
-                    List<Widget> widgetList = [];
-                    for (int i = 0; i < snapshot.data!.count!.toInt(); i++) {
+                    List<Widget> widgetList = [
+                      Container(
+                        margin: const EdgeInsets.only(top: 20),
+                        child: const Text("Educators",
+                            style: TextStyle(fontSize: 30)),
+                      ),
+                      const Divider(),
+                    ];
+                    for (int i = 0;i < snapshot.data!.educatorIds!.count!.toInt();i++) {
                       widgetList.add(
                         Row(
                           children: [
@@ -104,7 +85,40 @@ class _PeoplesState extends State<Peoples> {
                             Container(
                               margin: const EdgeInsets.only(top: 10),
                               child: Text(
-                                  "${snapshot.data!.result![i].userFname} ${snapshot.data!.result![i].userLname}",
+                                  "${snapshot.data!.educatorIds!.result![i].userFname} ${snapshot.data!.educatorIds!.result![i].userLname}",
+                                  style: const TextStyle(fontSize: 20)),
+                            )
+                          ],
+                        ),
+                      );
+                    }
+                    widgetList.addAll([
+                      Container(
+                        margin: const EdgeInsets.only(top: 20),
+                        child: const Text("Learners",
+                            style: TextStyle(fontSize: 30)),
+                      ),
+                      const Divider(),
+                    ]);
+                    for (int i = 0;i < snapshot.data!.learnerIds!.count!.toInt();i++) {
+                      widgetList.add(
+                        Row(
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 10, right: 10, top: 10),
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.grey.withOpacity(0.2),
+                              ),
+                              child: const Icon(Icons.person),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              child: Text(
+                                  "${snapshot.data!.learnerIds!.result![i].userFname} ${snapshot.data!.learnerIds!.result![i].userLname}",
                                   style: const TextStyle(fontSize: 20)),
                             )
                           ],
@@ -123,56 +137,6 @@ class _PeoplesState extends State<Peoples> {
                     return Text("${snapshot.error}");
                   }
                   return const Center(child: CircularProgressIndicator());
-                })),
-          ),
-          Container(
-            margin: const EdgeInsets.only(top: 20),
-            child: const Text("Learners", style: TextStyle(fontSize: 30)),
-          ),
-          const Divider(),
-          Expanded(
-            child: FutureBuilder<Learners>(
-                future: futureLearners,
-                builder: ((context, snapshot) {
-                  if (snapshot.hasData) {
-                    List<Widget> widgetList = [];
-                    for (int i = 0; i < snapshot.data!.count!.toInt(); i++) {
-                      widgetList.add(
-                        Row(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(
-                                  left: 10, right: 10, top: 10),
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.grey.withOpacity(0.2),
-                              ),
-                              child: const Icon(Icons.person),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(top: 10),
-                              child: Text(
-                                  "${snapshot.data!.result![i].userFname} ${snapshot.data!.result![i].userLname}",
-                                  style: const TextStyle(fontSize: 20)),
-                            )
-                          ],
-                        ),
-                      );
-                    }
-                    return ListView.separated(
-                        separatorBuilder: (context, index) => const SizedBox(
-                              height: 10,
-                            ),
-                        itemCount: widgetList.length,
-                        itemBuilder: ((context, index) {
-                          return widgetList[index];
-                        }));
-                  } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
-                  }
-                  return Center(child: const CircularProgressIndicator());
                 })),
           ),
         ],

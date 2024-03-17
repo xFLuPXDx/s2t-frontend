@@ -147,7 +147,7 @@ class _RecordPageState extends State<RecordPage> {
                   iconSize: 100,
                   padding: const EdgeInsets.only(right: 100, top: 5)),
             ),
-            StreamBuilder<RecordingDisposition>(
+            audReady ? const Text("Please dont exit this page untill audio gets uploaded") : StreamBuilder<RecordingDisposition>(
                 stream: recorder.onProgress,
                 builder: (context, snapshot) {
                   final duration = snapshot.hasData

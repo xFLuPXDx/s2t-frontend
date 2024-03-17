@@ -303,13 +303,13 @@ class _Groups_DrawerState extends State<Groups_Drawer> {
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
-                              Get.to(() => GroupPage(
+                              Get.off(() => GroupPage(
                                   group_Id: snapshot
                                       .data!.result![index].groupId
                                       .toString(),
                                   group_Subject: snapshot
                                       .data!.result![index].groupSubject
-                                      .toString()));
+                                      .toString()),preventDuplicates: false);
                             },
                             child: Container(
                               decoration: BoxDecoration(

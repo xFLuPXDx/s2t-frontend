@@ -75,7 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ))
         ],
       ),
-      body: Center(child: fetchGroups()),
+      body: const Center(child: fetchGroups()),
+      drawer: const Groups_Drawer(),
       floatingActionButton: FloatingActionButton(
         splashColor: const Color.fromARGB(255, 255, 255, 255),
         shape: const CircleBorder(),
