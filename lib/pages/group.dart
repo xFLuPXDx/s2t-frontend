@@ -58,6 +58,7 @@ class _GroupPageState extends State<GroupPage> {
         shadowColor: Colors.black,
         elevation: 5,
       ),
+      drawer: const Groups_Drawer(),
       body: widgetList.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: user_Type == "educator"

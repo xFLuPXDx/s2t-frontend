@@ -39,14 +39,14 @@ class _DetailedResourceState extends State<DetailedResource> {
       widgetlist.add(Column(
         children: [
           Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: Text(widget.topicsCovered[i])),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: YoutubePlayer(
               controller: YoutubePlayerController(
                   initialVideoId: video_ids[i],
-                  flags: YoutubePlayerFlags(autoPlay: false)),
+                  flags: const YoutubePlayerFlags(autoPlay: false)),
               showVideoProgressIndicator: true,
             ),
           ),
