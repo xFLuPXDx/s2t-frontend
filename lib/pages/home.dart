@@ -51,21 +51,40 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF7BD3EA),
         shadowColor: Colors.black,
         elevation: 5,
         actions: [
           IconButton(
               onPressed: () {
-                logout().whenComplete(() => Get.off(() =>  const Spalsh_Screen()));
-                
+                showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text('Logout'),
+                    content: const Text('Click on Logout to confirm'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context, 'Cancel');
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          logout().whenComplete(
+                              () => Get.off(() => const Spalsh_Screen()));
+                        },
+                        child: const Text('Logout'),
+                      ),
+                    ],
+                  ),
+                );
               },
               icon: Container(
                 margin: const EdgeInsets.only(right: 10),
@@ -75,7 +94,14 @@ class _MyHomePageState extends State<MyHomePage> {
               ))
         ],
       ),
-      body: const Center(child: fetchGroups()),
+      body: RefreshIndicator(
+          triggerMode: RefreshIndicatorTriggerMode.onEdge,
+          color: const Color(0xFF7BD3EA),
+          onRefresh: () async {
+            await Future.delayed(const Duration(seconds: 1));
+            setState(() {});
+          },
+          child: const Center(child: fetchGroups())),
       drawer: const Groups_Drawer(),
       floatingActionButton: FloatingActionButton(
         splashColor: const Color.fromARGB(255, 255, 255, 255),
@@ -172,5 +198,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-

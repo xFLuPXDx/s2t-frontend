@@ -21,7 +21,16 @@ class Resources extends StatefulWidget {
 
 class _ResourcesState extends State<Resources> {
   Future<ResourcesList>? futureResources;
-  late List<Widget> widgetlist;
+  String? user_Type;
+  int deleteResourceStatusCode = 0;
+
+  getUserType() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      user_Type = prefs.getString("user_Type");
+    });
+  }
+
   Future<ResourcesList> getResources() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
@@ -41,9 +50,27 @@ class _ResourcesState extends State<Resources> {
     }
   }
 
+  Future deleteResource(rid) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access_token');
+    http.Response response = await http.post(
+      Uri.parse("$API_URL/resource/delete"),
+      body: json.encode({"rid": rid}),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
+    );
+    deleteResourceStatusCode = response.statusCode;
+    setState(() {
+      futureResources = getResources();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    getUserType();
     futureResources = getResources();
   }
 
@@ -52,124 +79,230 @@ class _ResourcesState extends State<Resources> {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
-    widgetlist = [
-      Container(
-          margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
-          height: 100,
-          width: screenWidth * 0.95,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                spreadRadius: 2,
-                blurRadius: 2,
-                offset: const Offset(-2, 2),
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20, top: 60),
-            child: Text(
-              widget.group_Subject,
-              style: const TextStyle(fontSize: 20),
-            ),
-          )),
-    ];
-
-    return Scaffold(
-        body: Column(
-      children: [
-        FutureBuilder<ResourcesList>(
-          future: futureResources,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              for (int index = 0;
-                  index < snapshot.data!.count!.toInt();
-                  index++) {
-                widgetlist.add(Container(
-                  margin: const EdgeInsets.only(top: 15, left: 10, right: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        spreadRadius: 2,
-                        blurRadius: 2,
-                        offset: const Offset(-2, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(children: [
-                    Container(
-                      padding: const EdgeInsets.only(
-                          top: 10, left: 97, right: 97, bottom: 5),
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(10)),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            spreadRadius: 1,
-                            blurRadius: 1,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Text(
-                          "${snapshot.data!.result![index].timeStamp.toString()} Lecture Summary "),
+    return RefreshIndicator(
+      triggerMode: RefreshIndicatorTriggerMode.onEdge,
+      color: const Color(0xFF7BD3EA),
+      onRefresh: () async {
+        await Future.delayed(const Duration(seconds: 2));
+        setState(() {
+          futureResources = getResources();
+        });
+      },
+      child: Scaffold(
+          body: Column(
+        children: [
+          FutureBuilder<ResourcesList>(
+            future: futureResources,
+            builder: (context, snapshot) {
+              late List<Widget> widgetlist;
+              widgetlist = [
+                Container(
+                    margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
+                    height: 100,
+                    width: screenWidth * 0.95,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF7BD3EA).withOpacity(0.3),
+                          spreadRadius: 2,
+                          blurRadius: 2,
+                          offset: const Offset(-2, 2),
+                        ),
+                      ],
                     ),
-                    GestureDetector(
-                      onTap: () => Get.to(() => DetailedResource(
-                            timeStamp: snapshot.data!.result![index].timeStamp
-                                .toString(),
-                            summarizedText: snapshot
-                                .data!.result![index].summarizedText
-                                .toString(),
-                            topicsCovered: snapshot
-                                .data!.result![index].topicsCovered!
-                                .toList(),
-                            resourceLinks: snapshot
-                                .data!.result![index].resourceLinks!
-                                .toList(),
-                          )),
-                      child: Container(
-                        margin: const EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        user_Type == "educator"
+                            ? Container(
+                                margin: EdgeInsets.only(
+                                    left: screenWidth * 0.65, top: 10),
+                                child: Text("Code : ${widget.group_Id}"),
+                              )
+                            : const Text(""),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20, top: 30),
+                          child: Text(
+                            widget.group_Subject,
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      ],
+                    )),
+              ];
+              if (snapshot.hasData) {
+                for (int index = 0;
+                    index < snapshot.data!.count!.toInt();
+                    index++) {
+                  widgetlist.add(Container(
+                    margin: const EdgeInsets.only(top: 15, left: 10, right: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF7BD3EA).withOpacity(0.3),
+                          spreadRadius: 2,
+                          blurRadius: 2,
+                          offset: const Offset(-2, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
                         child: Text(
-                          snapshot.data!.result![index].summarizedText
-                              .toString(),
-                          style: const TextStyle(fontSize: 15),
+                              "${snapshot.data!.result![index].timeStamp.toString()} Lecture Summary ",
+                              style: const TextStyle(fontSize: 16 , color: Colors.black)),
+                      ),
+                            Divider(),
+                      GestureDetector(
+                        onTap: () => Get.to(() => DetailedResource(
+                              timeStamp: snapshot.data!.result![index].timeStamp
+                                  .toString(),
+                              summarizedText: snapshot
+                                  .data!.result![index].summarizedText
+                                  .toString(),
+                              topicsCovered: snapshot
+                                  .data!.result![index].topicsCovered!
+                                  .toList(),
+                              resourceLinks: snapshot
+                                  .data!.result![index].resourceLinks!
+                                  .toList(),
+                            )),
+                        onLongPress: () {
+                          user_Type == "educator"
+                              ? showModalBottomSheet(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Container(
+                                      height: screenHeight * 0.08,
+                                      width: screenWidth,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: Colors.white,
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              showDialog<String>(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          AlertDialog(
+                                                            title: const Text(
+                                                                'Delete resource from group'),
+                                                            content: const Text(
+                                                                'Click on Delete to confirm'),
+                                                            actions: <Widget>[
+                                                              TextButton(
+                                                                onPressed: () {
+                                                                  Navigator.pop(
+                                                                      context,
+                                                                      'Cancel');
+                                                                },
+                                                                child: const Text(
+                                                                    'Cancel'),
+                                                              ),
+                                                              TextButton(
+                                                                onPressed: () {
+                                                                  deleteResource(snapshot
+                                                                          .data!
+                                                                          .result![
+                                                                              index]
+                                                                          .rid
+                                                                          .toString())
+                                                                      .whenComplete(
+                                                                    () {
+                                                                      if (deleteResourceStatusCode ==
+                                                                          200) {
+                                                                        ScaffoldMessenger.of(context)
+                                                                            .showSnackBar(const SnackBar(
+                                                                          content:
+                                                                              Text('Resource deleted successfully'),
+                                                                        ));
+                                                                        Navigator.pop(
+                                                                            context,
+                                                                            "OK");
+                                                                      } else {
+                                                                        ScaffoldMessenger.of(context)
+                                                                            .showSnackBar(const SnackBar(
+                                                                          content:
+                                                                              Text('Error in deleting resources'),
+                                                                        ));
+                                                                      }
+                                                                    },
+                                                                  );
+                                                                },
+                                                                child: const Text(
+                                                                    'Delete'),
+                                                              ),
+                                                            ],
+                                                          ));
+                                            },
+                                            child: SizedBox(
+                                              height: 50,
+                                              width: screenWidth,
+                                              child: const Padding(
+                                                padding: EdgeInsets.only(
+                                                    left: 20, top: 20),
+                                                child: Text(
+                                                  "Delete Resource",
+                                                  style:
+                                                      TextStyle(fontSize: 18),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                )
+                              : const Text("");
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.all(10),
+                          child: Text(
+                            snapshot.data!.result![index].summarizedText
+                                .toString(),
+                            style: const TextStyle(fontSize: 18 , color: Colors.black),
+                          ),
                         ),
                       ),
+                    ]),
+                  ));
+                }
+                return Expanded(
+                  child: ListView.builder(
+                      itemCount: widgetlist.length,
+                      itemBuilder: ((context, index) {
+                        return widgetlist[index];
+                      })),
+                );
+              } else if (snapshot.hasError) {
+                widgetlist.add(
+                  Center(
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 300),
+                      child: const Text("No Resources Yet"),
                     ),
-                  ]),
-                ));
-              }
-              return Expanded(
-                child: ListView.builder(
-                    itemCount: widgetlist.length,
-                    itemBuilder: ((context, index) {
-                      return widgetlist[index];
-                    })),
-              );
-            } else if (snapshot.hasError) {
-              widgetlist.add(
-                Center(
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 300),
-                    child: const Text("No Resources Yet"),
                   ),
-                ),
-              );
-              return Column(children: [widgetlist[0], widgetlist[1]]);
-            }
-            return const Center(child: CircularProgressIndicator());
-          },
-        ),
-      ],
-    ));
+                );
+                return Column(children: [widgetlist[0], widgetlist[1]]);
+              }
+              return Center(
+                  child: Container(
+                      margin: EdgeInsets.only(top: screenHeight * 0.4),
+                      child: const CircularProgressIndicator()));
+            },
+          ),
+        ],
+      )),
+    );
   }
 }

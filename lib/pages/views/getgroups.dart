@@ -18,7 +18,6 @@ class fetchGroups extends StatefulWidget {
 }
 
 class fetchGroupsState extends State<fetchGroups> {
-  
   Future deleteGroups(code) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
@@ -31,7 +30,7 @@ class fetchGroupsState extends State<fetchGroups> {
       },
     );
     setState(() {
-      getGroups();
+      futureGroups = getGroups();
     });
   }
 
@@ -94,7 +93,7 @@ class fetchGroupsState extends State<fetchGroups> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: const Color(0xFF7BD3EA).withOpacity(0.3),
                             spreadRadius: 2,
                             blurRadius: 2,
                             offset: const Offset(-2, 2),
@@ -114,7 +113,7 @@ class fetchGroupsState extends State<fetchGroups> {
                                     snapshot.data!.result![index].groupName
                                         .toString(),
                                     style:
-                                        const TextStyle(color: Colors.black)),
+                                        const TextStyle(fontSize: 20, color: Colors.black )),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(right: 20),
@@ -137,44 +136,43 @@ class fetchGroupsState extends State<fetchGroups> {
                                                   onTap: () {
                                                     Navigator.pop(context);
                                                     showDialog<String>(
-                                                        context: context,
-                                                        builder:
-                                                            (BuildContext
-                                                                    context) =>
-                                                                AlertDialog(
-                                                                  title: const Text(
-                                                                      'Unenrol from group'),
-                                                                  content:
-                                                                      const Text(
-                                                                          'Click on Unenrol to confirm'),
-                                                                  actions: <Widget>[
-                                                                    TextButton(
-                                                                      onPressed:
-                                                                          () {
-                                                                        Navigator.pop(
-                                                                            context,
-                                                                            'Cancel');
-                                                                      },
-                                                                      child: const Text(
-                                                                          'Cancel'),
-                                                                    ),
-                                                                    TextButton(
-                                                                      onPressed:
-                                                                          () {
-                                                                        deleteGroups(snapshot
-                                                                            .data!
-                                                                            .result![index]
-                                                                            .groupId
-                                                                            .toString());
-                                                                        Navigator.pop(
-                                                                            context,
-                                                                            'OK');
-                                                                      },
-                                                                      child: const Text(
-                                                                          'Unenrol'),
-                                                                    ),
-                                                                  ],
-                                                                ));
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                              context) =>
+                                                          AlertDialog(
+                                                        title: const Text(
+                                                            'Un enroll from group'),
+                                                        content: const Text(
+                                                            'Click on Un enroll to confirm'),
+                                                        actions: <Widget>[
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              Navigator.pop(
+                                                                  context,
+                                                                  'Cancel');
+                                                            },
+                                                            child: const Text(
+                                                                'Cancel'),
+                                                          ),
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              deleteGroups(snapshot
+                                                                      .data!
+                                                                      .result![
+                                                                          index]
+                                                                      .groupId
+                                                                      .toString())
+                                                                  .whenComplete(() =>
+                                                                      Navigator.pop(
+                                                                          context,
+                                                                          'OK'));
+                                                            },
+                                                            child: const Text(
+                                                                'Unenroll'),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    );
                                                   },
                                                   child: SizedBox(
                                                     height: 50,
@@ -205,7 +203,7 @@ class fetchGroupsState extends State<fetchGroups> {
                             child: Text(
                                 snapshot.data!.result![index].groupSubject
                                     .toString(),
-                                style: const TextStyle(color: Colors.black)),
+                                style: const TextStyle(fontSize: 20, color: Colors.black )),
                           ),
                         ],
                       ),
@@ -213,7 +211,7 @@ class fetchGroupsState extends State<fetchGroups> {
                   );
                 }));
           } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
+            return const Text("");
           }
           return const CircularProgressIndicator();
         }));
@@ -257,87 +255,120 @@ class _Groups_DrawerState extends State<Groups_Drawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: const Color(0xFF7BD3EA),
       width: 250,
       child: SafeArea(
-        child: Column(
-          children: [
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 15, left: 15),
-                child: Text(
-                  'Clarity',
-                  style: TextStyle(fontSize: 25),
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Container(
+                  color: const Color(0xFF7BD3EA),
+                  child: const Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(top: 15, left: 15, bottom: 5),
+                        child: Text(
+                          'Clarity',
+                          style: TextStyle(fontSize: 25 , color: Colors.black , fontWeight:FontWeight.w500),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const Divider(
-                height: 18,
-              ),
-              GestureDetector(
-                onTap: () {
-                  Get.off(() => const MyHomePage());
-                },
-                child: Container(
-                    padding: const EdgeInsets.only(left: 15),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.home_outlined, size: 30),
-                        Padding(
-                          padding: EdgeInsets.only(left: 5),
-                          child: Text("Groups", style: TextStyle(fontSize: 25)),
-                        )
-                      ],
-                    )),
-              ),
-              const SizedBox(height: 20),
-            ]),
-            FutureBuilder<Groups>(
-                future: futureGroups,
-                builder: ((context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Expanded(
-                      child: ListView.separated(
-                        separatorBuilder: (context, index) => const SizedBox(
-                      height: 10,
-                    ),
-                        itemCount: snapshot.data!.count!.toInt(),
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              Get.off(() => GroupPage(
-                                  group_Id: snapshot
-                                      .data!.result![index].groupId
-                                      .toString(),
-                                  group_Subject: snapshot
-                                      .data!.result![index].groupSubject
-                                      .toString()),preventDuplicates: false);
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.blue.withOpacity(0.05),
-                                  border: Border.all(
-                                      width: 1,
-                                      color: Colors.black.withOpacity(0.05),
-                                      style: BorderStyle.solid)),
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 20, top: 5, bottom: 5),
-                                child: Text(
-                                  snapshot.data!.result![index].groupName
-                                      .toString(),
-                                  style: const TextStyle(fontSize: 20),
+                const Divider(
+                  height: 1,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Get.off(() => const MyHomePage());
+                  },
+                  child: Container(
+                      padding: const EdgeInsets.only(left: 15, top: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF7BD3EA).withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 2,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.home_outlined, size: 30),
+                          Padding(
+                            padding: EdgeInsets.only(left: 5),
+                            child:
+                                Text("Groups", style: TextStyle(fontSize: 25 , color: Colors.black , fontWeight:FontWeight.w500)),
+                          )
+                        ],
+                      )),
+                ),
+                const SizedBox(height: 20),
+              ]),
+              FutureBuilder<Groups>(
+                  future: futureGroups,
+                  builder: ((context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Expanded(
+                        child: ListView.separated(
+                          separatorBuilder: (context, index) => const SizedBox(
+                            height: 10,
+                          ),
+                          itemCount: snapshot.data!.count!.toInt(),
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                                Get.to(
+                                    () => GroupPage(
+                                        group_Id: snapshot
+                                            .data!.result![index].groupId
+                                            .toString(),
+                                        group_Subject: snapshot
+                                            .data!.result![index].groupSubject
+                                            .toString()),
+                                    preventDuplicates: false);
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF7BD3EA)
+                                          .withOpacity(0.3),
+                                      spreadRadius: 2,
+                                      blurRadius: 2,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 20, bottom: 5),
+                                  child: Text(
+                                    snapshot.data!.result![index].groupName
+                                        .toString(),
+                                    style: const TextStyle(fontSize: 20, color: Colors.black , fontWeight:FontWeight.w500),
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
-                  }
-                  return const Center(child: CircularProgressIndicator());
-                }))
-          ],
+                            );
+                          },
+                        ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return const Text("");
+                    }
+                    return const Center(child: CircularProgressIndicator());
+                  }))
+            ],
+          ),
         ),
       ),
     );

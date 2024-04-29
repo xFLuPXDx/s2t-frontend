@@ -8,58 +8,73 @@ import 'views/getgroups.dart';
 class GroupPage extends StatefulWidget {
   final String group_Id;
   final String group_Subject;
-  const GroupPage({super.key, required this.group_Id , required this.group_Subject});
+  const GroupPage(
+      {super.key, required this.group_Id, required this.group_Subject});
 
   @override
   State<GroupPage> createState() => _GroupPageState();
 }
 
 class _GroupPageState extends State<GroupPage> {
+  PageController pageController = PageController(
+    initialPage: 0,
+    keepPage: true
+  );
   int _selectedIndex = 0;
   String group_Id = "";
   List<Widget> widgetList = [];
   String? user_Type;
 
-  getUserType() async {
+  Future getUserType() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       user_Type = prefs.getString("user_Type");
     });
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   void initState() {
-    getUserType();
+    getUserType().whenComplete(() {
+      if (user_Type == 'educator') {
+        widgetList = [
+          Resources(
+              group_Id: widget.group_Id, group_Subject: widget.group_Subject),
+          RecordPage(
+              group_Id: widget.group_Id, group_Subject: widget.group_Subject),
+          Peoples(
+              group_Id: widget.group_Id, group_Subject: widget.group_Subject),
+        ];
+      } else {
+        widgetList = [
+          Resources(
+              group_Id: widget.group_Id, group_Subject: widget.group_Subject),
+          Peoples(
+              group_Id: widget.group_Id, group_Subject: widget.group_Subject),
+        ];
+      }
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (user_Type == 'educator') {
-      widgetList = [
-        Resources(group_Id: widget.group_Id , group_Subject:  widget.group_Subject),
-        RecordPage(group_Id: widget.group_Id , group_Subject:  widget.group_Subject),
-        Peoples(group_Id: widget.group_Id , group_Subject:  widget.group_Subject),
-      ];
-    } else {
-      widgetList = [
-        Resources(group_Id: widget.group_Id , group_Subject:  widget.group_Subject),
-        Peoples(group_Id: widget.group_Id , group_Subject:  widget.group_Subject),
-      ];
-    }
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color(0xFF7BD3EA),
         shadowColor: Colors.black,
         elevation: 5,
       ),
       drawer: const Groups_Drawer(),
-      body: widgetList.elementAt(_selectedIndex),
+      body: PageView(
+        pageSnapping: true,
+        controller: pageController,
+        children: widgetList,
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: user_Type == "educator"
             ? const [
@@ -67,7 +82,7 @@ class _GroupPageState extends State<GroupPage> {
                     icon: Icon(Icons.file_copy_outlined), label: "Resources"),
                 BottomNavigationBarItem(
                     icon: Icon(Icons.record_voice_over), label: "Record"),
-                 BottomNavigationBarItem(
+                BottomNavigationBarItem(
                     icon: Icon(Icons.people_alt_sharp), label: "Peoples")
               ]
             : const [
@@ -78,7 +93,13 @@ class _GroupPageState extends State<GroupPage> {
               ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.red,
-        onTap: _onItemTapped,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+            pageController.animateToPage(index,
+                duration: Duration(milliseconds: 500), curve: Curves.ease);
+          });
+        },
       ),
     );
   }

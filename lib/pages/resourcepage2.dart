@@ -1,10 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
-import 'package:s2t_learning/structure/resourcestruct.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 String API_URL = dotenv.get("API_URL");
@@ -34,23 +29,55 @@ class _DetailedResourceState extends State<DetailedResource> {
   void initState() {
     super.initState();
     video_ids = widget.resourceLinks;
-    widgetlist = [Text(widget.timeStamp), Text(widget.summarizedText)];
-    for (int i = 0; i < widget.resourceLinks.length; i++) {
-      widgetlist.add(Column(
-        children: [
-          Container(
-              padding: const EdgeInsets.all(10),
-              child: Text(widget.topicsCovered[i])),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: YoutubePlayer(
-              controller: YoutubePlayerController(
-                  initialVideoId: video_ids[i],
-                  flags: const YoutubePlayerFlags(autoPlay: false)),
-              showVideoProgressIndicator: true,
-            ),
+    widgetlist = [
+      Container(
+      
+          margin: const EdgeInsets.only(
+            top: 20
           ),
-        ],
+          child: Center(
+              child: Text(
+            "${widget.timeStamp} Lecture Summary",
+            style: const TextStyle(fontSize: 20 ,color: Colors.black),
+          ))),
+          Divider(),
+      Container(margin: const EdgeInsets.all(20), child: Text(widget.summarizedText, style: const TextStyle(fontSize: 18,color: Colors.black)))
+    ];
+    for (int i = 0; i < widget.resourceLinks.length; i++) {
+      widgetlist.add(Container(
+        margin: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+          border: Border.all(
+            width: 1,
+            color: Colors.grey,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color.fromARGB(255, 92, 124, 133).withOpacity(0.3),
+              spreadRadius: 2,
+              blurRadius: 2,
+              offset: const Offset(-2, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+                padding: const EdgeInsets.all(10),
+                child: Text(widget.topicsCovered[i] , style: const TextStyle(fontSize: 18 , color: Colors.black))),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: YoutubePlayer(
+                controller: YoutubePlayerController(
+                    initialVideoId: video_ids[i],
+                    flags: const YoutubePlayerFlags(autoPlay: false)),
+                showVideoProgressIndicator: true,
+              ),
+            ),
+          ],
+        ),
       ));
     }
   }
@@ -59,6 +86,7 @@ class _DetailedResourceState extends State<DetailedResource> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: const Color(0xFF7BD3EA),
           shadowColor: Colors.black,
           elevation: 5,
         ),

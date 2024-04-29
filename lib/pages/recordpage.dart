@@ -27,6 +27,8 @@ class _RecordPageState extends State<RecordPage> {
   bool isPlaying = false;
   bool isRecorderReady = false;
   bool audReady = false;
+  bool isUploaded = false;
+  bool isUploadStarted = false;
 
   Future record() async {
     if (!isRecorderReady) return;
@@ -40,21 +42,25 @@ class _RecordPageState extends State<RecordPage> {
       url = path;
       audReady = true;
     });
-
-    print(path);
   }
 
   Future<void> uploadFile() async {
+    setState(() {
+      isUploadStarted = true;
+    });
     var uri = Uri.parse("$API_URL/resource/upload/${widget.group_Id}");
     var request = http.MultipartRequest('POST', uri);
-    print(url);
-    print(url.toString());
+
     request.files
         .add(await http.MultipartFile.fromPath('file', url.toString()));
     var response = await request.send();
 
     if (response.statusCode == 200) {
       print("File uploaded successfully");
+      setState(() {
+        isUploadStarted = false;
+        isUploaded = true;
+      });
     } else {
       print("File upload failed with status: ${response.statusCode}");
     }
@@ -122,114 +128,185 @@ class _RecordPageState extends State<RecordPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            audReady ? const Text("Audio Recorded") : Container(
-              height: 100,
-              width: 100,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.red.withOpacity(0.8),
-              ),
-              child: IconButton(
-                  icon: Icon(recorder.isRecording
-                      ? Icons.stop
-                      : Icons.mic_none_rounded),
-                  onPressed: () async {
-                    if (recorder.isRecording) {
-                      await stop();
-                    } else {
-                      await record();
-                    }
-                    setState(() {});
-                  },
-                  iconSize: 100,
-                  padding: const EdgeInsets.only(right: 100, top: 5)),
-            ),
-            audReady ? const Text("Please dont exit this page untill audio gets uploaded") : StreamBuilder<RecordingDisposition>(
-                stream: recorder.onProgress,
-                builder: (context, snapshot) {
-                  final duration = snapshot.hasData
-                      ? snapshot.data!.duration
-                      : Duration.zero;
-
-                  String twoDigits(int n) => n.toString().padLeft(2, '0');
-                  final twoDigitsMinutes = twoDigits(duration.inMinutes);
-                  final twoDigitsSeconds =
-                      twoDigits(duration.inSeconds.remainder(60));
-
-                  return Text(
-                    '$twoDigitsMinutes:$twoDigitsSeconds',
-                    style: const TextStyle(
-                      fontSize: 50,
-                    ),
-                  );
-                }),
-            const SizedBox(
-              height: 20,
-            ),
-            audReady
-                ? Column(
-                    children: [
-                      Slider(
-                          min: 0,
-                          max: playerDuration.inSeconds.toDouble(),
-                          value: playerPosition.inSeconds.toDouble(),
-                          onChanged: (value) async {
-                            final position = Duration(seconds: value.toInt());
-                            await audioPlayer.seek(position);
-                            await audioPlayer.resume();
-                          }),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(formatTime(playerPosition)),
-                            Text(formatTime(playerDuration))
-                          ],
-                        ),
-                      ),
-                      CircleAvatar(
-                        radius: 35,
-                        child: IconButton(
-                          icon:
-                              Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-                          iconSize: 50,
-                          onPressed: () async {
-                            if (isPlaying) {
-                              await audioPlayer.pause();
-                            } else {
-                              await audioPlayer
-                                  .play(ap.UrlSource(url.toString()));
-                            }
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 50),
-                        child: ElevatedButton(
-                          onPressed: () => uploadFile(),
-                          child: SizedBox(
-                            width: screenWidth * 0.5,
-                            height: screenHeight * 0.07,
-                            child: const Center(
-                              child: Text(
-                                "Upload",
-                                style: TextStyle(
-                                  fontSize: 30,
-                                ),
-                              ),
-                            ),
+        child: isUploaded
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 100,
+                  ),
+                  const Text("Resource Uploaded",
+                      style: TextStyle(
+                        fontSize: 20,
+                      )),
+                  const SizedBox(
+                    height: 100,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        isUploaded = false;
+                        isUploadStarted = false;
+                        isPlaying = false;
+                        isRecorderReady = false;
+                        audReady = false;
+                      });
+                    },
+                    child: SizedBox(
+                      width: screenWidth * 0.5,
+                      height: screenHeight * 0.07,
+                      child: const Center(
+                        child: Text(
+                          "Record",
+                          style: TextStyle(
+                            fontSize: 30,
                           ),
                         ),
                       ),
-                    ],
-                  )
-                : const Text("Click on button record audio")
-          ],
-        ),
+                    ),
+                  ),
+                ],
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: isUploadStarted
+                    ? [
+                        const CircularProgressIndicator(),
+                        const SizedBox(height: 100),
+                        const Text(
+                            "Please dont exit this page untill audio gets uploaded")
+                      ]
+                    : [
+                        audReady
+                            ? const Text(
+                                "Audio Recorded",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                ),
+                              )
+                            : Container(
+                                height: 100,
+                                width: 100,
+                                child: IconButton(
+                                    icon: Icon(
+                                        recorder.isRecording
+                                            ? Icons.stop
+                                            : Icons.mic_none,
+                                        color: Colors.red),
+                                    onPressed: () async {
+                                      if (recorder.isRecording) {
+                                        await stop();
+                                      } else {
+                                        await record();
+                                      }
+                                      setState(() {});
+                                    },
+                                    iconSize: 100,
+                                    padding: const EdgeInsets.only(
+                                        right: 100, top: 5)),
+                              ),
+                        audReady
+                            ? const Text("")
+                            : StreamBuilder<RecordingDisposition>(
+                                stream: recorder.onProgress,
+                                builder: (context, snapshot) {
+                                  final duration = snapshot.hasData
+                                      ? snapshot.data!.duration
+                                      : Duration.zero;
+
+                                  String twoDigits(int n) =>
+                                      n.toString().padLeft(2, '0');
+                                  final twoDigitsMinutes =
+                                      twoDigits(duration.inMinutes);
+                                  final twoDigitsSeconds = twoDigits(
+                                      duration.inSeconds.remainder(60));
+
+                                  return Text(
+                                    '$twoDigitsMinutes:$twoDigitsSeconds',
+                                    style: const TextStyle(
+                                      fontSize: 50,
+                                    ),
+                                  );
+                                }),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        audReady
+                            ? Column(
+                                children: [
+                                  Slider(
+                                      min: 0,
+                                      max: playerDuration.inSeconds.toDouble(),
+                                      value:
+                                          playerPosition.inSeconds.toDouble(),
+                                      onChanged: (value) async {
+                                        final position =
+                                            Duration(seconds: value.toInt());
+                                        await audioPlayer.seek(position);
+                                        await audioPlayer.resume();
+                                      }),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(formatTime(playerPosition)),
+                                        Text(formatTime(playerDuration))
+                                      ],
+                                    ),
+                                  ),
+                                  CircleAvatar(
+                                    radius: 35,
+                                    child: IconButton(
+                                      icon: Icon(isPlaying
+                                          ? Icons.pause
+                                          : Icons.play_arrow),
+                                      iconSize: 50,
+                                      onPressed: () async {
+                                        if (isPlaying) {
+                                          await audioPlayer.pause();
+                                        } else {
+                                          await audioPlayer.play(
+                                              ap.UrlSource(url.toString()));
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 50),
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          isUploaded = false;
+                                        });
+                                        uploadFile();
+                                      },
+                                      child: SizedBox(
+                                        width: screenWidth * 0.5,
+                                        height: screenHeight * 0.07,
+                                        child: const Center(
+                                          child: Text(
+                                            "Upload",
+                                            style: TextStyle(
+                                              fontSize: 30,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : const Text(
+                                "",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                ),
+                              )
+                      ],
+              ),
       ),
     );
   }

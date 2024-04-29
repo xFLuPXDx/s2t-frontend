@@ -25,18 +25,21 @@ class ResourcesList {
 }
 
 class Result {
+  String? rid;
   String? timeStamp;
   String? summarizedText;
   List<String>? topicsCovered;
   List<String>? resourceLinks;
 
   Result(
-      {this.timeStamp,
+      {this.rid,
+        this.timeStamp,
       this.summarizedText,
       this.topicsCovered,
       this.resourceLinks});
 
   Result.fromJson(Map<String, dynamic> json) {
+    rid = json['resource_Id'];
     timeStamp = json['time_Stamp'];
     summarizedText = json['summarized_Text'];
     topicsCovered = json['topics_Covered'].cast<String>();
@@ -45,6 +48,7 @@ class Result {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['resource_Id'] = this.rid;
     data['time_Stamp'] = this.timeStamp;
     data['summarized_Text'] = this.summarizedText;
     data['topics_Covered'] = this.topicsCovered;

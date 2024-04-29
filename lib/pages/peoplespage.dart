@@ -51,95 +51,143 @@ class _PeoplesState extends State<Peoples> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: FutureBuilder<PeoplesInGroup>(
-                future: futurePeoplesInGroup,
-                builder: ((context, snapshot) {
-                  if (snapshot.hasData) {
-                    List<Widget> widgetList = [
-                      Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        child: const Text("Educators",
-                            style: TextStyle(fontSize: 30)),
-                      ),
-                      const Divider(),
-                    ];
-                    for (int i = 0;i < snapshot.data!.educatorIds!.count!.toInt();i++) {
-                      widgetList.add(
-                        Row(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(
-                                  left: 10, right: 10, top: 10),
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.grey.withOpacity(0.2),
-                              ),
-                              child: const Icon(Icons.person),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(top: 10),
-                              child: Text(
-                                  "${snapshot.data!.educatorIds!.result![i].userFname} ${snapshot.data!.educatorIds!.result![i].userLname}",
-                                  style: const TextStyle(fontSize: 20)),
-                            )
-                          ],
+    return RefreshIndicator(
+      triggerMode: RefreshIndicatorTriggerMode.onEdge,
+      color: const Color(0xFF7BD3EA),
+      onRefresh: () async {
+        await Future.delayed(const Duration(seconds: 2));
+        setState(() {
+          futurePeoplesInGroup = getPeoplesInGroup();
+        });
+      },
+      child: Scaffold(
+        body: Column(
+          children: [
+            Expanded(
+              child: FutureBuilder<PeoplesInGroup>(
+                  future: futurePeoplesInGroup,
+                  builder: ((context, snapshot) {
+                    if (snapshot.hasData) {
+                      List<Widget> widgetList = [
+                        Container(
+                          margin: const EdgeInsets.only(top: 20, left: 10),
+                          child: const Text("Educators",
+                              style: TextStyle(
+                                  fontSize: 30,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500)),
                         ),
-                      );
-                    }
-                    widgetList.addAll([
-                      Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        child: const Text("Learners",
-                            style: TextStyle(fontSize: 30)),
-                      ),
-                      const Divider(),
-                    ]);
-                    for (int i = 0;i < snapshot.data!.learnerIds!.count!.toInt();i++) {
-                      widgetList.add(
-                        Row(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(
-                                  left: 10, right: 10, top: 10),
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.grey.withOpacity(0.2),
-                              ),
-                              child: const Icon(Icons.person),
+                        const Divider(),
+                      ];
+                      for (int i = 0;
+                          i < snapshot.data!.educatorIds!.count!.toInt();
+                          i++) {
+                        widgetList.add(
+                          GestureDetector(
+                            onTap: () {
+                              showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  title: Text(
+                                      "${snapshot.data!.educatorIds!.result![i].userFname.toString()} ${snapshot.data!.educatorIds!.result![i].userLname}"),
+                                  content:
+                                      const Text('Click on Logout to confirm'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context, 'Email');
+                                      },
+                                      child: const Text('Email'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {},
+                                      child: const Text('Remove'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 10, right: 10, top: 10),
+                                  height: 40,
+                                  width: 40,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.grey.withOpacity(0.2),
+                                  ),
+                                  child: const Icon(Icons.person),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(top: 10),
+                                  child: Text(
+                                      "${snapshot.data!.educatorIds!.result![i].userFname} ${snapshot.data!.educatorIds!.result![i].userLname}",
+                                      style: const TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w500)),
+                                ),
+                              ],
                             ),
-                            Container(
-                              margin: const EdgeInsets.only(top: 10),
-                              child: Text(
-                                  "${snapshot.data!.learnerIds!.result![i].userFname} ${snapshot.data!.learnerIds!.result![i].userLname}",
-                                  style: const TextStyle(fontSize: 20)),
-                            )
-                          ],
+                          ),
+                        );
+                      }
+                      widgetList.addAll([
+                        Container(
+                          margin: const EdgeInsets.only(top: 20, left: 10),
+                          child: const Text("Learners",
+                              style: TextStyle(
+                                  fontSize: 30,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500)),
                         ),
-                      );
+                        const Divider(),
+                      ]);
+                      for (int i = 0;
+                          i < snapshot.data!.learnerIds!.count!.toInt();
+                          i++) {
+                        widgetList.add(
+                          Row(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    left: 10, right: 10, top: 10),
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.grey.withOpacity(0.2),
+                                ),
+                                child: const Icon(Icons.person),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(top: 10),
+                                child: Text(
+                                    "${snapshot.data!.learnerIds!.result![i].userFname} ${snapshot.data!.learnerIds!.result![i].userLname}",
+                                    style: const TextStyle(fontSize: 20)),
+                              )
+                            ],
+                          ),
+                        );
+                      }
+                      return ListView.separated(
+                          separatorBuilder: (context, index) => const SizedBox(
+                                height: 10,
+                              ),
+                          itemCount: widgetList.length,
+                          itemBuilder: ((context, index) {
+                            return widgetList[index];
+                          }));
+                    } else if (snapshot.hasError) {
+                      return Text("${snapshot.error}");
                     }
-                    return ListView.separated(
-                        separatorBuilder: (context, index) => const SizedBox(
-                              height: 10,
-                            ),
-                        itemCount: widgetList.length,
-                        itemBuilder: ((context, index) {
-                          return widgetList[index];
-                        }));
-                  } else if (snapshot.hasError) {
-                    return Text("${snapshot.error}");
-                  }
-                  return const Center(child: CircularProgressIndicator());
-                })),
-          ),
-        ],
+                    return const Center(child: CircularProgressIndicator());
+                  })),
+            ),
+          ],
+        ),
       ),
     );
   }

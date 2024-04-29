@@ -22,6 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
   bool _isHidden = true;
   bool _success = true;
+  int statusCode = 0;
 
   void _togglePasswordView() {
     setState(() {
@@ -51,16 +52,8 @@ class _LoginPageState extends State<LoginPage> {
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
       saveAccessToken(data["access_token"]);
-      print(data);
-      setState(() {
-        _success = true;
-      });
-    } else if (response.statusCode == 401) {
-      setState(() {
-        _success = false;
-      });
-      print(response.statusCode.toString());
-    }
+    } 
+    statusCode = response.statusCode;
   }
 
   Future getData() async {
@@ -76,13 +69,8 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-      prefs.setString("user_Fname", data["user_Fname"]);
-      prefs.setString("user_Lname", data["user_Lname"]);
-      prefs.setString("user_Email", data["user_Email"]);
       prefs.setString("user_Type", data["user_Type"]);
-    } else {
-      print(response.statusCode.toString());
-    }
+    } else {}
   }
 
   bool _isValidEmail(String email) {
@@ -98,14 +86,6 @@ class _LoginPageState extends State<LoginPage> {
         alphabeticRegex.hasMatch(password) &&
         numericRegex.hasMatch(password);
   }
-
-  final snackBar = SnackBar(
-    content: const Text('Invalid Credentials'),
-    action: SnackBarAction(
-      label: "X",
-      onPressed: () {},
-    ),
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
               child: TextFormField(
                 controller: passwordController,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   labelText: 'Password',
                   suffix: InkWell(
                     onTap: _togglePasswordView,
@@ -179,14 +159,15 @@ class _LoginPageState extends State<LoginPage> {
                 }
                 if (_formkey.currentState!.validate()) {
                   postData().whenComplete(() {
-                    if (!_success) {
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      passwordController.text = "";
-                    } else {
+                   if (statusCode == 401) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Invalid Credentials'),
+                      ));
+                    }else
+                    {
                       getData().whenComplete(() {
-                        Get.off(()=>MyHomePage());
+                        Get.off(() => const MyHomePage());
                       });
-                      
                     }
                   });
                 }
@@ -210,10 +191,7 @@ class _LoginPageState extends State<LoginPage> {
                 const Text("Dont have an account? "),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SignUpPage()),
-                    );
+                    Get.off(const SignUpPage());
                   },
                   child: const Text(
                     "Sign Up",

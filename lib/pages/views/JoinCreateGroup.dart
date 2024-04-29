@@ -20,6 +20,7 @@ class JoinGroup extends StatefulWidget {
 
 class _JoinGroupState extends State<JoinGroup> {
   final joinController = TextEditingController();
+  int joinGroupStatusCode = 0 ;
 
   Future joinGroups(code) async {
     final prefs = await SharedPreferences.getInstance();
@@ -32,6 +33,8 @@ class _JoinGroupState extends State<JoinGroup> {
         'Authorization': 'Bearer $token'
       },
     );
+    
+    joinGroupStatusCode = response.statusCode;
   }
 
   @override
@@ -63,9 +66,17 @@ class _JoinGroupState extends State<JoinGroup> {
           onPressed: () {
             Future.wait([
               joinGroups(joinController.text).whenComplete(() {
-                Get.to(() => const MyHomePage());
+                if (joinGroupStatusCode == 200) {
+                  Get.off(() => const MyHomePage());
+                }else{
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Group does not exist'),
+                ));
+                }
               })
             ]);
+             
+            
           },
           child: const Text("Join"),
         )
@@ -89,7 +100,7 @@ class _CreateGroupState extends State<CreateGroup> {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
     http.Response response = await http.post(
-      Uri.parse("$API_URL/group/insert"),
+      Uri.parse("$API_URL/group/create"),
       body: json.encode({
         "group_Name": name,
         "group_Subject": subject,
@@ -135,7 +146,7 @@ class _CreateGroupState extends State<CreateGroup> {
             Future.wait([
               createGroups(nameController.text, subjectController.text)
                   .whenComplete(() {
-                Get.to(() => const MyHomePage());
+                Get.off(() => const MyHomePage());
               })
             ]);
           },

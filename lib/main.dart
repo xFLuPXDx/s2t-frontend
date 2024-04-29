@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'S2T Learning',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        
         useMaterial3: true,
         primarySwatch: Colors.blueGrey,
       ),
