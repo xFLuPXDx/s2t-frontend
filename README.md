@@ -4,13 +4,24 @@ A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+![image](https://github.com/xFLuPXDx/s2t-frontend/assets/117719818/1f89e72d-0e55-47ca-8c30-2cb55b042f76)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+![image](https://github.com/xFLuPXDx/s2t-frontend/assets/117719818/3642f6b5-e6ad-4f3d-852b-8ace491de2f4)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![image](https://github.com/xFLuPXDx/s2t-frontend/assets/117719818/74869e98-bfcb-4dd6-bb42-4dbbd7bc42da)
+
+![image](https://github.com/xFLuPXDx/s2t-frontend/assets/117719818/6406bb7c-f4ec-4099-9954-51d1cc16cf5b)
+
+![image](https://github.com/xFLuPXDx/s2t-frontend/assets/117719818/28a346a2-ed36-4715-9765-da79c06aebfd)
+
+![image](https://github.com/xFLuPXDx/s2t-frontend/assets/117719818/307c760c-5f41-4ae7-90d4-ace8c80fe99d)
+
+![image](https://github.com/xFLuPXDx/s2t-frontend/assets/117719818/c7fb8fdd-61e8-4b73-ada0-de70db97acdc)
+
+
+
+
+
+
+
