@@ -5,7 +5,6 @@ A new Flutter project.
 ## Getting Started
 
 
-![image](https://github.com/xFLuPXDx/s2t-frontend/assets/117719818/1f89e72d-0e55-47ca-8c30-2cb55b042f76)
 
 ![image](https://github.com/xFLuPXDx/s2t-frontend/assets/117719818/3642f6b5-e6ad-4f3d-852b-8ace491de2f4)
 
