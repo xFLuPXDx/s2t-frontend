@@ -18,6 +18,9 @@ A new Flutter project.
 
 ![image](https://github.com/xFLuPXDx/s2t-frontend/assets/117719818/c7fb8fdd-61e8-4b73-ada0-de70db97acdc)
 
+![image](https://github.com/xFLuPXDx/s2t-frontend/assets/117719818/4c1ad001-0ad6-4809-8f9f-dc3694e52296)
+
+
 
 
 
