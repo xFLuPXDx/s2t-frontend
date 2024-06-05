@@ -2,6 +2,8 @@
 
 A new Flutter project.
 
+this whole project is frontend based and the backend is on fastapi server https://github.com/xFLuPXDx/s2t-backend that you have to host for the app to connect to the app to backend and store Server URL in variable API_URL.
+
 ## Getting Started
 
 
